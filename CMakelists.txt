@@ -1,0 +1,127 @@
+# ------ Set Options for Projects --------------- #
+MESSAGE( STATUS "Set Options for Project" )
+
+## CMake minimum version required
+CMAKE_MINIMUM_REQUIRED( VERSION 3.20 )
+## Make Project Name
+SET( PROJECT_NAME "ReflectionProject" )
+## Project name
+PROJECT(${PROJECT_NAME})
+## Set C++ Compiler Version : C++17
+SET( CMAKE_CXX_STANDARD 17 )
+
+MESSAGE( STATUS "Setting Done" )
+# ----------------------------------------------- #
+
+
+
+# ------ Set Path ------------------------------ #
+MESSAGE( STATUS "Set Path" )
+
+## Set Directories
+SET( MAIN_DIR ${CMAKE_SOURCE_DIR} )
+SET( DEMOFILE_DIR ${MAIN_DIR}/demofile )
+
+SET( CORE_DIR ${MAIN_DIR}/Core )
+SET( METHODREFLECTION_DIR ${MAIN_DIR}/MethodReflection )
+SET( PROPERTYREFLECTION_DIR ${MAIN_DIR}/PropertyReflection )
+SET( TYPEREFLECTION_DIR ${MAIN_DIR}/TypeReflection )
+
+MESSAGE( STATUS "Setting Done" )
+# ------------------------------------------------ #
+
+
+
+# ------ Set Option ----------------------------- #
+MESSAGE( STATUS "Set Option" )
+
+OPTION( BUILD_STATIC_LIBRARY "Set option for the library which is static or dynamic" OFF )
+OPTION( INSTALL_DEMO_FILE "Install demofile for Reflection System" OFF )
+## Set Option for install lib, header files' path
+SET( INCLUDE_DIR ${MAIN_DIR}/build/include CACHE PATH "Header files Path" )
+SET( ARC_DIR ${MAIN_DIR}/build/arc CACHE PATH "Archeive files Path")
+SET( LIB_DIR ${MAIN_DIR}/build/lib CACHE PATH "Library files Path" )
+SET( BIN_DIR ${MAIN_DIR}/build/bin CACHE PATH "Binary files Path ")
+SET( CMAKE_BUILD_TYPE Debug CACHE STRING "Build Type")
+
+MESSAGE( STATUS ${CMAKE_BUILD_TYPE} )
+
+INCLUDE_DIRECTORIES( ${CORE_DIR} ${METHODREFLECTION_DIR} ${PROPERTYREFLECTION_DIR} ${TYPEREFLECTION_DIR} )
+LIST( APPEND FOLDER_DIR ${CORE_DIR} ${METHODREFLECTION_DIR} ${PROPERTYREFLECTION_DIR} ${TYPEREFLECTION_DIR} )
+LIST( APPEND SOURCE_DIR 
+    ${CORE_DIR}/Core.h
+
+    ${METHODREFLECTION_DIR}/MethodMacro.h
+
+    ${PROPERTYREFLECTION_DIR}/PropertyMacro.h
+
+    ${TYPEREFLECTION_DIR}/TypeInfo.h ${TYPEREFLECTION_DIR}/TypeInfo.cpp
+    ${TYPEREFLECTION_DIR}/TypeInfoManager.h ${TYPEREFLECTION_DIR}/TypeInfoManager.h
+    ${TYPEREFLECTION_DIR}/TypeMacro.h
+    )
+
+IF ( WIN32 )
+    MESSAGE( STATUS "Windows Platform for library")
+    SET( CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS 1 )
+ENDIF()
+
+MESSAGE( STATUS "Setting Done ")
+# ----------------------------------------------- #
+
+
+# ------ Create library ------------------------- #
+MESSAGE(STATUS "Create Library ")
+
+IF ( BUILD_STATIC_LIBRARY )
+    ADD_LIBRARY( ${PROJECT_NAME} STATIC ${SOURCE_DIR} )
+    MESSAGE( STATUS "Build library as a static" )
+ELSE ()
+    ADD_LIBRARY( ${PROJECT_NAME} SHARED ${SOURCE_DIR} )
+    MESSAGE( STATUS "Build library as a dynamic" )
+ENDIF()
+
+FOREACH( FOLDER ${FOLDER_DIR} )
+    FILE( COPY ${FOLDER}/ DESTINATION ${INCLUDE_DIR}/${PROJECT_NAME}
+        FILES_MATCHING PATTERN "*.h" )
+ENDFOREACH()
+
+IF ( CMAKE_BUILD_TYPE MATCHES Debug )
+    SET_TARGET_PROPERTIES( ${PROJECT_NAME} PROPERTIES
+        ARCHIVE_OUTPUT_DIRECTORY_DEBUG ${ARC_DIR}
+        LIBRARY_OUTPUT_DIRECTORY_DEBUG ${LIB_DIR}
+        RUNTIME_OUTPUT_DIRECTORY_DEBUG ${BIN_DIR}
+    )
+    MESSAGE( STATUS "Build library on Debug mode" )
+ELSEIF ( CMAKE_BUILD_TYPE MATCHES Release )
+    SET_TARGET_PROPERTIES( ${PROJECT_NAME} PROPERTIES
+        ARCHIVE_OUTPUT_DIRECTORY_RELEASE ${ARC_DIR}
+        LIBRARY_OUTPUT_DIRECTORY_RELEASE ${LIB_DIR}
+        RUNTIME_OUTPUT_DIRECTORY_RELEASE ${BIN_DIR}
+    )
+    MESSAGE( STATUS "Build library on Release mode" )
+ELSE()
+    SET_TARGET_PROPERTIES( ${PROJECT_NAME} PROPERTIES
+        ARCHIVE_OUTPUT_DIRECTORY ${ARC_DIR}
+        LIBRARY_OUTPUT_DIRECTORY ${LIB_DIR}
+        RUNTIME_OUTPUT_DIRECTORY ${BIN_DIR}
+    )
+    MESSAGE( STATUS "Build library on Other mode" )
+ENDIF()
+
+MESSAGE( STATUS "Creating Done ")
+# ----------------------------------------------- #
+
+
+
+# ------ Create Demofile ------------------------ #
+MESSAGE( STATUS "Create Demofile")
+
+IF ( INSTALL_DEMO_FILE )
+    ADD_SUBDIRECTORY( ${DEMOFILE_DIR} )
+    MESSAGE( STATUS "Install Demofile that use Reflection System" )
+ELSE()
+    MESSAGE( STATUS "Do not install Reflection System's Demofile" )
+ENDIF()
+
+MESSAGE( STATUS "Create Done")
+# ----------------------------------------------- #
