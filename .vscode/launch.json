@@ -8,20 +8,20 @@
         {
             "type": "lldb",
             "request": "launch",
-            "name": "Debug",
+            "name": "LLDB",
             "program": "${workspaceFolder}/demofile/build/Debug/Demofile.exe",
             "args": [],
             "cwd": "${workspaceFolder}"
         }
         ,
         {
-            "name" : "Debug with MSVC",
+            "name" : "VSDBG",
             "type" : "cppvsdbg",
             "request" : "launch",
             "program" : "${workspaceFolder}/demofile/build/Debug/Demofile.exe",
             "args" : [],
             "cwd" : "${workspaceFolder}",
-            "stopAtEntry" : true,
+            "stopAtEntry" : false,
         }
     ]
 }
