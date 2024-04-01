@@ -36,7 +36,7 @@ MESSAGE( STATUS "Setting Done" )
 MESSAGE( STATUS "Set Option" )
 
 OPTION( BUILD_STATIC_LIBRARY "Set option for the library which is static or dynamic" OFF )
-OPTION( INSTALL_DEMO_FILE "Install demofile for Reflection System" OFF )
+OPTION( INSTALL_DEMO_FILE "Install demofile for Reflection System" ON )
 ## Set Option for install lib, header files' path
 SET( INCLUDE_DIR ${MAIN_DIR}/build/include CACHE PATH "Header files Path" )
 SET( ARC_DIR ${MAIN_DIR}/build/arc CACHE PATH "Archeive files Path")
@@ -58,6 +58,7 @@ LIST( APPEND SOURCE_DIR
     ${TYPEREFLECTION_DIR}/TypeInfo.h ${TYPEREFLECTION_DIR}/TypeInfo.cpp
     ${TYPEREFLECTION_DIR}/TypeInfoManager.h ${TYPEREFLECTION_DIR}/TypeInfoManager.h
     ${TYPEREFLECTION_DIR}/TypeMacro.h
+    ${TYPEREFLECTION_DIR}/TypeCast.h
     )
 
 IF ( WIN32 )
@@ -117,7 +118,7 @@ MESSAGE( STATUS "Creating Done ")
 MESSAGE( STATUS "Create Demofile")
 
 IF ( INSTALL_DEMO_FILE )
-    ADD_SUBDIRECTORY( ${DEMOFILE_DIR} )
+    INCLUDE_DIRECTORIES( ${DEMOFILE_DIR} )
     MESSAGE( STATUS "Install Demofile that use Reflection System" )
 ELSE()
     MESSAGE( STATUS "Do not install Reflection System's Demofile" )

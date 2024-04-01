@@ -5,7 +5,7 @@ MESSAGE(STATUS "Set Options for Project")
 CMAKE_MINIMUM_REQUIRED(VERSION 3.20)
 
 ## Set CXX Compiler Version
-SET(CMAKE_CXX_STANDARD 17)
+SET(CMAKE_CXX_STANDARD 20)
 
 SET( PROJECT_NAME "Demofile")
 PROJECT( ${PROJECT_NAME} )
@@ -30,6 +30,7 @@ LIST(APPEND SRCS
     ${MAIN_DIR}/main.cpp
 
     ${CORE_DIR}/Core.h
+    ${CORE_DIR}/Platform.h
 
     ${METHODREFLECTION_DIR}/MethodMacro.h
 
@@ -38,10 +39,11 @@ LIST(APPEND SRCS
     ${TYPEREFLECTION_DIR}/TypeInfo.h ${TYPEREFLECTION_DIR}/TypeInfo.cpp
     ${TYPEREFLECTION_DIR}/TypeInfoManager.h ${TYPEREFLECTION_DIR}/TypeInfoManager.h
     ${TYPEREFLECTION_DIR}/TypeMacro.h
+    ${TYPEREFLECTION_DIR}/TypeCast.h
 )
 
 LIST(APPEND INCS 
-    ${CORE_DIR} ${MEMORYPTR_DIR} ${MEMORYMANAGER_DIR} ${MEMORYEXCEPT_DIR} )
+    ${CORE_DIR} ${METHODREFLECTION_DIR} ${PROPERTYREFLECTION_DIR} ${TYPEREFLECTION_DIR} )
 
 MESSAGE(STATUS "Setting Done ")
 # ----------------------------------------------- #
