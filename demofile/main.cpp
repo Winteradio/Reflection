@@ -23,12 +23,6 @@ class NE_API CObject : public Object
         int Value = 2;
 };
 
-class NE_API IWrong
-{};
-
-class NE_API Wrong : public IWrong
-{};
-
 namespace Hello
 {
     class NE_API Object : public IObject
@@ -50,9 +44,17 @@ int MAIN()
 
     CObject* cvalue = Type::Cast<CObject*>( value );
 
+    /* Compile Error
+    class NE_API IWrong
+    {};
+
+    class NE_API Wrong : public IWrong
+    {};
+
     Wrong* wrong = new Wrong();
 
     IWrong* IWrongvalue = Type::Cast<IWrong*>( wrong );
+    */
 
     system("pause");
 

@@ -24,12 +24,6 @@ class NE_API CObject : public Object
         int Value = 2;
 };
 
-class NE_API IWrong
-{};
-
-class NE_API Wrong : public IWrong
-{};
-
 namespace Hello
 {
     class NE_API Object : public IObject
@@ -48,12 +42,28 @@ int MAIN()
     Object* value = new Object();
 
     IObject* ivalue = Type::Cast<IObject*>( value );
+    if (ivalue == nullptr)
+    {
+        LOGERROR() << "Failed to cast from Object to IObject";
+    }
 
     CObject* cvalue = Type::Cast<CObject*>( value );
+    if (cvalue == nullptr)
+    {
+        LOGERROR() << "Failed to cast from Object to CObject";
+    }
+
+    /* Compile Error
+    class NE_API IWrong 
+    {};
+
+    class NE_API Wrong : public IWrong
+    {};
 
     Wrong* wrong = new Wrong();
 
     IWrong* IWrongvalue = Type::Cast<IWrong*>( wrong );
+    */
 
     system("pause");
 
