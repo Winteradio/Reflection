@@ -1,0 +1,159 @@
+# ------ Set Options for Projects --------------- #
+MESSAGE(STATUS "Set Options for Project")
+
+## CMake minimum version required
+CMAKE_MINIMUM_REQUIRED(VERSION 3.20)
+
+## Set CXX Compiler Version
+SET(CMAKE_CXX_STANDARD 20)
+
+SET( PROJECT_NAME "Demofile")
+PROJECT( ${PROJECT_NAME} )
+
+MESSAGE(STATUS "Setting Done")
+# ----------------------------------------------- #
+
+
+# ------ Set Files ------------------------------ #
+MESSAGE(STATUS "Set Source File")
+
+SET( MAIN_DIR ${CMAKE_SOURCE_DIR} )
+
+SET( CORE_DIR ${MAIN_DIR}/../Core )
+SET( METHODREFLECTION_DIR ${MAIN_DIR}/../MethodReflection )
+SET( PROPERTYREFLECTION_DIR ${MAIN_DIR}/../PropertyReflection )
+SET( TYPEREFLECTION_DIR ${MAIN_DIR}/../TypeReflection )
+
+## Source Files
+LIST(APPEND SRCS
+    ## Demo file
+    ${MAIN_DIR}/main.cpp
+
+    ${CORE_DIR}/Core.h
+    ${CORE_DIR}/Platform.h
+
+    ${METHODREFLECTION_DIR}/MethodMacro.h
+
+    ${PROPERTYREFLECTION_DIR}/PropertyMacro.h
+
+    ${TYPEREFLECTION_DIR}/TypeInfo.h ${TYPEREFLECTION_DIR}/TypeInfo.cpp
+    ${TYPEREFLECTION_DIR}/TypeDetection.h
+    ${TYPEREFLECTION_DIR}/TypeMacro.h
+    ${TYPEREFLECTION_DIR}/TypeCast.h
+    ${TYPEREFLECTION_DIR}/TypeRemovePointer.h
+)
+
+LIST(APPEND INCS 
+    ${CORE_DIR} ${METHODREFLECTION_DIR} ${PROPERTYREFLECTION_DIR} ${TYPEREFLECTION_DIR} )
+
+MESSAGE(STATUS "Setting Done ")
+# ----------------------------------------------- #
+
+
+
+# ------ Set Options for Target Files ----------- #
+MESSAGE( STATUS "Add Executable by platform")
+
+## Include Header Directories for Target Files
+IF ( WIN32 )
+    MESSAGE( STATUS "Windows Platform for demofile")
+    ADD_EXECUTABLE( ${PROJECT_NAME} WIN32 ${SRCS} )
+
+    SET( STATIC_LIB lib )
+    SET( DYNAMIC_LIB dll)
+
+ELSE ()
+    MESSAGE( STATUS "Other Platform for demofile")
+    ADD_EXECUTABLE( ${PROJECT_NAME} ${SRCS} )
+
+    SET( STATIC_LIB a )
+    SET( DYNAMIC_LIB so )
+
+ENDIF()
+
+MESSAGE( STATUS "Setting Done" )
+# ----------------------------------------------- #
+
+
+
+# ------ Set Executable file -------------------- #
+MESSAGE(STATUS "Set Options for Target Files")
+
+SET( CMAKE_BUILD_TYPE Debug CACHE STRING "Build Type" )
+
+IF ( CMAKE_BUILD_TYPE MATCHES Debug )
+    SET( EXE_DIR ${MAIN_DIR}/build/Debug )
+    SET_TARGET_PROPERTIES( ${PROJECT_NAME} PROPERTIES
+        RUNTIME_OUTPUT_DIRECTORY_DEBUG ${EXE_DIR}
+    )
+    MESSAGE( STATUS "Build exe file on Debug mode" )
+ELSEIF ( CMAKE_BUILD_TYPE MATCHES Release )
+    SET( EXE_DIR ${MAIN_DIR}/build/Release )
+    SET_TARGET_PROPERTIES( ${PROJECT_NAME} PROPERTIES
+        RUNTIME_OUTPUT_DIRECTORY_RELEASE ${EXE_DIR}
+    )
+    MESSAGE( STATUS "Build exe file on Release mode" )
+ELSE()
+    SET( EXE_DIR ${MAIN_DIR}/build )
+    SET_TARGET_PROPERTIES( ${PROJECT_NAME} PROPERTIES
+        RUNTIME_OUTPUT_DIRECTORY ${EXE_DIR}
+    )
+    MESSAGE( STATUS "Build exe file on Other mode" )
+ENDIF()
+
+MESSAGE( STATUS "Setting Done ")
+# ----------------------------------------------- #
+
+
+
+
+# ------ Download LogProject in Github ---------- #
+MESSAGE( STATUS "Download LogProject" )
+
+INCLUDE( ExternalProject )
+
+SET( DEP_INCLUDE )
+SET( DEP_LIBS )
+SET( DEP_LIST )
+
+SET( PREFIX_DIR ${MAIN_DIR}/build/Prefix )
+SET( INCLUDE_DIR ${MAIN_DIR}/build/include )
+SET( LIB_DIR ${MAIN_DIR}/build/lib )
+SET( BIN_DIR ${EXE_DIR} )
+SET( ARC_DIR ${MAIN_DIR}/build/arc )
+
+EXTERNALPROJECT_ADD(
+	LogProject
+	GIT_REPOSITORY GIT_REPOSITORY https://github.com/Winteradio/Log.git
+
+	PREFIX ${PREFIX_DIR}/LogProject
+
+	UPDATE_COMMAND "" PATCH_COMMAND "" TEST_COMMAND "" INSTALL_COMMAND ""
+	CMAKE_ARGS 
+		-DINCLUDE_DIR=${INCLUDE_DIR}
+		-DLIB_DIR=${LIB_DIR}
+		-DBIN_DIR=${BIN_DIR}
+		-DARC_DIR=${ARC_DIR}
+		-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+		-DBUILD_STATIC_LIBRARY=${BUILD_STATIC_LIBRARY}
+ 		-DINSTALL_DEMO_FILE=OFF 
+)
+LIST( APPEND DEP_INCLUDE ${INCLUDE_DIR} )
+LIST( APPEND DEP_LIST LogProject )
+LIST( APPEND DEP_LIBS ${ARC_DIR}/LogProject.${STATIC_LIB} )
+
+MESSAGE( STATUS "Downloading Done" )
+# ----------------------------------------------- #
+
+
+
+# ------ Link LogProject on Target  ------------- #
+MESSAGE(STATUS "Set Options for Target Files")
+
+TARGET_INCLUDE_DIRECTORIES(${PROJECT_NAME} PUBLIC ${DEP_INCLUDE} ${INCS})
+TARGET_LINK_DIRECTORIES(${PROJECT_NAME} PUBLIC ${DEMO_LIB_DIR})
+TARGET_LINK_LIBRARIES(${PROJECT_NAME} PUBLIC ${DEP_LIBS})
+ADD_DEPENDENCIES(${PROJECT_NAME} ${DEP_LIST})
+
+MESSAGE(STATUS "Setting Done ")
+# ----------------------------------------------- #
