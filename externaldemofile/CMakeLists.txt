@@ -117,9 +117,9 @@ EXTERNALPROJECT_ADD(
  		-DINSTALL_DEMO_FILE=OFF 
 )
 
-LIST( APPEND DEP_LIST ReflectioProject )
+LIST( APPEND DEP_LIST ReflectionProject )
 LIST( APPEND DEP_INCLUDE ${DEMO_INCLUDE_DIR} )
-LIST( APPEND DEP_LIBS ${DEMO_ARC_DIR}/ReflectioProject.${STATIC_LIB} )
+LIST( APPEND DEP_LIBS ${DEMO_ARC_DIR}/ReflectionProject.${STATIC_LIB} )
 
 MESSAGE( STATUS "Downloading Done" )
 # ----------------------------------------------- #
