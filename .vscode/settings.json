@@ -1,7 +1,8 @@
 {
     "files.associations": {
         "ostream": "cpp",
-        "xtr1common": "cpp"
+        "xtr1common": "cpp",
+        "type_traits": "cpp"
     },
     "C_Cpp.errorSquiggles": "disabled"
 }

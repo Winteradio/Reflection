@@ -1,37 +1,46 @@
 #include "TypeInfo.h"
 
-TypeInfo::TypeInfo( const char* className ) 
-    : m_Name( className )
-    , m_SuperPtr( nullptr )
-{}
-
-TypeInfo::TypeInfo( const char* className, TypeInfo& super  ) 
-    : m_Name( className )
-    , m_SuperPtr( &super )
-{}
-
-TypeInfo::TypeInfo( const TypeInfo& Other ) 
-    : m_Name( Other.m_Name )
-    , m_SuperPtr( Other.m_SuperPtr )
-{}
-
-TypeInfo::TypeInfo( TypeInfo&& Other ) 
-    : m_Name( Other.m_Name )
-    , m_SuperPtr( Other.m_SuperPtr )
-{}
-
-TypeInfo::~TypeInfo()
-{}
-
-bool TypeInfo::operator==( const TypeInfo& Other ) const 
+namespace MetaData
 {
-    return m_Name == Other.m_Name;
+    TypeInfo::TypeInfo(const char* _pName, const TypeInfo* _pSuper)
+        : m_pTypeName(_pName)
+        , m_pSuper(_pSuper)
+    {}
+
+    TypeInfo::TypeInfo(const TypeInfo& _rhs)
+        : m_pTypeName(_rhs.m_pTypeName)
+        , m_pSuper(_rhs.m_pSuper)
+    {}
+
+    TypeInfo::TypeInfo(TypeInfo&& _rhs)
+        : m_pTypeName(_rhs.m_pTypeName)
+        , m_pSuper(_rhs.m_pSuper)
+    {}
+
+    bool TypeInfo::operator==(const TypeInfo& _rhs) const
+    {
+        if ((m_pTypeName == _rhs.m_pTypeName) || (m_pSuper == _rhs.m_pSuper))
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    void TypeInfo::SetSuper(const TypeInfo* _pSuper)
+    {
+        m_pSuper = _pSuper;
+    }
+
+    const TypeInfo* TypeInfo::GetSuper() const
+    {
+        return m_pSuper;
+    }
+
+    const char* TypeInfo::GetTypeName() const
+    {
+        return m_pTypeName;
+    }
 }
-
-void TypeInfo::SetSuper( TypeInfo& Super )
-{
-    m_SuperPtr = &Super;
-}
-
-TypeInfo* TypeInfo::GetSuper() { return m_SuperPtr; }
-

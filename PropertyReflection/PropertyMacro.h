@@ -1,4 +1,4 @@
-#ifndef __PROPERTYMACRO_H__
-#define __PROPERTYMACRO_H__
+#ifndef __PROPERTY_MACRO_H__
+#define __PROPERTY_MACRO_H__
 
-#endif // __PROPERTYMACRO_H__
+#endif // __PROPERTY_MACRO_H__
