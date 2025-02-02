@@ -2,7 +2,6 @@
 #define __PLATFORM_H__
 
 #ifdef _WIN32
-
     #include <windows.h>
         #pragma comment(linker, "/entry:WinMainCRTStartup")
         #pragma comment(linker, "/subsystem:console")
@@ -11,7 +10,6 @@
     #define PLATFORM "Windows"
 
 #elif __linux__
-    
     #define MAIN() main()
     #define PLATFORM "Linux"
 

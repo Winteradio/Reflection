@@ -1,28 +1,28 @@
-#ifndef __TYPEINFO_H__
-#define __TYPEINFO_H__
+#ifndef __TYPE_INFO_H__
+#define __TYPE_INFO_H__
 
-#include <stdio.h>
-
-class TypeInfo
+namespace MetaData
 {
-    public :
-        TypeInfo() = delete;
-        explicit TypeInfo( const char* className );
-        explicit TypeInfo( const char* className, TypeInfo& super );
-        explicit TypeInfo( const TypeInfo& Other );
-        explicit TypeInfo( TypeInfo&& Other );
-        virtual ~TypeInfo();
+	class TypeInfo
+	{
+		public :
+			TypeInfo() = delete;
+			explicit TypeInfo(const char* _pName, const TypeInfo* _pSuper = nullptr);
+			TypeInfo(const TypeInfo& _rhs);
+			TypeInfo(TypeInfo&& _rhs);
 
-    public :
-        bool operator==( const TypeInfo& Other ) const;
-    
-    public :
-        void SetSuper( TypeInfo& Super );
-        TypeInfo* GetSuper();
+			bool operator==(const TypeInfo& _rhs) const;
 
-    private :
-        const char* m_Name = nullptr;
-        TypeInfo* m_SuperPtr = nullptr;
+		public :
+			void SetSuper(const TypeInfo*  _pSuper);
+
+			const TypeInfo* GetSuper() const;
+			const char* GetTypeName() const;
+
+		private :
+			const char* m_pTypeName;
+			const TypeInfo* m_pSuper;
+	};
 };
 
-#endif // __TYPEINFO_H__
+#endif // __TYPE_INFO_H__

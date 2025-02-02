@@ -1,7 +1,8 @@
 #include <iostream>
 #include <LogProject/Log.h>
-#include "Platform.h"
-#include "TypeCast.h"
+#include <ReflectionProject/Platform.h>
+#include <ReflectionProject/TypeMacro.h>
+#include <ReflectionProject/TypeCast.h>
 
 #define NE_API
 

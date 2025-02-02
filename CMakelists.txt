@@ -46,25 +46,28 @@ SET( CMAKE_BUILD_TYPE Debug CACHE STRING "Build Type")
 
 MESSAGE( STATUS ${CMAKE_BUILD_TYPE} )
 
-INCLUDE_DIRECTORIES( ${CORE_DIR} ${METHODREFLECTION_DIR} ${PROPERTYREFLECTION_DIR} ${TYPEREFLECTION_DIR} )
 LIST( APPEND FOLDER_DIR ${CORE_DIR} ${METHODREFLECTION_DIR} ${PROPERTYREFLECTION_DIR} ${TYPEREFLECTION_DIR} )
 LIST( APPEND SOURCE_DIR 
-    ${CORE_DIR}/Core.h
+    ${CORE_DIR}/Platform.h
 
     ${METHODREFLECTION_DIR}/MethodMacro.h
+    ${METHODREFLECTION_DIR}/MethodInfo.h
 
     ${PROPERTYREFLECTION_DIR}/PropertyMacro.h
+    ${PROPERTYREFLECTION_DIR}/PropertyInfo.h
 
-    ${TYPEREFLECTION_DIR}/TypeInfo.h ${TYPEREFLECTION_DIR}/TypeInfo.cpp
-    ${TYPEREFLECTION_DIR}/TypeInfoManager.h ${TYPEREFLECTION_DIR}/TypeInfoManager.h
     ${TYPEREFLECTION_DIR}/TypeMacro.h
+    ${TYPEREFLECTION_DIR}/TypeInfo.h ${TYPEREFLECTION_DIR}/TypeInfo.cpp
     ${TYPEREFLECTION_DIR}/TypeCast.h
+    ${TYPEREFLECTION_DIR}/TypeUtils.h
     )
 
 IF ( WIN32 )
     MESSAGE( STATUS "Windows Platform for library")
     SET( CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS 1 )
 ENDIF()
+
+INCLUDE_DIRECTORIES( ${FOLDER_DIR} )
 
 MESSAGE( STATUS "Setting Done ")
 # ----------------------------------------------- #
@@ -118,7 +121,7 @@ MESSAGE( STATUS "Creating Done ")
 MESSAGE( STATUS "Create Demofile")
 
 IF ( INSTALL_DEMO_FILE )
-    INCLUDE_DIRECTORIES( ${DEMOFILE_DIR} )
+    ADD_SUBDIRECTORY( ${DEMOFILE_DIR} )
     MESSAGE( STATUS "Install Demofile that use Reflection System" )
 ELSE()
     MESSAGE( STATUS "Do not install Reflection System's Demofile" )

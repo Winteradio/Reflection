@@ -1,56 +1,65 @@
-#ifndef __TYPECAST_H__
-#define __TYPECAST_H__
+#ifndef __TYPE_CAST_H__
+#define __TYPE_CAST_H__
 
+#include "TypeUtils.h"
 #include "TypeMacro.h"
 
-template< typename To, typename From >
-bool IsSame()
+namespace Type
 {
-    return To::GetStaticTypeInfo() == From::GetStaticTypeInfo();
-}
-
-template< typename To, typename From >
-bool IsChild()
-{
-    TypeInfo* super = From::GetStaticTypeInfo().GetSuper();
-
-    while( super != nullptr )
+    template<typename T, typename U>
+    bool IsSame()
     {
-        if ( To::GetStaticTypeInfo() == *super ) break;
-
-        super = super->GetSuper();
+        return (*T::GetStaticTypeInfo()) == (*U::GetStaticTypeInfo());
     }
 
-    return super != nullptr;
-}
-
-template< typename To, typename From >
-To TypeCast( From Ptr )
-{
-    if ( Ptr == nullptr )
+    template<typename T, typename U>
+    bool IsChild()
     {
+        const MetaData::TypeInfo* super = U::GetStaticTypeInfo()->GetSuper();
+
+        while(super != nullptr)
+        {
+            if (*T::GetStaticTypeInfo() == *super) 
+            {
+                break;
+            }
+            else
+            {
+                super = super->GetSuper();
+            }
+        }
+
+        return super != nullptr;
+    }
+
+    template<typename T, typename U>
+    T Cast(U Ptr)
+    {
+        using TType = Utils::RemovePointer_t<T>;
+        using UType = Utils::RemovePointer_t<U>;
+
+        if ( Ptr == nullptr )
+        {
+            return nullptr;
+        }
+
+        if ( IsSame<TType, UType>() )
+        {
+            return reinterpret_cast<T>( Ptr );
+        }
+
+        if ( IsChild<TType, UType>() )
+        {
+            return reinterpret_cast<T>( Ptr );
+        }
+
+        if ( TType::GetStaticTypeInfo() == Ptr->GetTypeInfo() )
+        {
+            return reinterpret_cast<T>( Ptr );
+        }
+
         return nullptr;
     }
+};
 
-    using ToType = std::remove_pointer<To>::type;
-    using FromType = std::remove_pointer<From>::type;
-
-    if ( IsSame<ToType,FromType>() )
-    {
-        return reinterpret_cast< To >( Ptr );
-    }
-
-    if ( IsChild<ToType,FromType>() )
-    {
-        return reinterpret_cast< To >( Ptr );
-    }
-
-    if ( ToType::GetStaticTypeInfo() == Ptr->GetTypeInfo() )
-    {
-        return reinterpret_cast< To >( Ptr );
-    }
-
-    return nullptr;
-}
-
-#endif // __TYPECAST_H__
+#endif // __TYPE_CAST_H__

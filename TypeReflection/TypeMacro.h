@@ -1,61 +1,29 @@
-#ifndef __TYPEMACRO_H__
-#define __TYPEMACRO_H__
+#ifndef __TYPE_MACRO_H__
+#define __TYPE_MACRO_H__
 
-#include <type_traits>
-
-#include "TypeInfo.h"
+#include "TypeUtils.h"
 
 #define GENERATE( className ) \
     private : \
-        friend SuperClassTypeDeduction; \
+        friend Type::Utils::SuperTypeDetection; \
 \
     public : \
-        using SuperType = SuperClassTypeDeduction<className>::Type; \
+        using SuperType = Type::Utils::SuperTypeDetection<className>::Type; \
         using ThisType = className; \
 \
-        static TypeInfo& GetStaticTypeInfo() \
+        static const MetaData::TypeInfo* GetStaticTypeInfo() \
         { \
-            static TypeInfo typeinfo( TypeInfoInitializer<SuperType>::Init( #className ) ); \
-            return typeinfo; \
+            static MetaData::TypeInfo typeinfo(Type::Utils::TypeInitializer<SuperType>::Init(#className)); \
+            return &typeinfo; \
         } \
 \
-        virtual TypeInfo& GetTypeInfo()\
+        virtual const MetaData::TypeInfo* GetTypeInfo()\
         { \
-            return m_TypeInfo; \
+            return TYPEINFO; \
         } \
 \
     private : \
-        static inline TypeInfo& m_TypeInfo = GetStaticTypeInfo(); \
+        static inline const MetaData::TypeInfo* TYPEINFO = GetStaticTypeInfo(); \
 \
 
-template< typename T, typename U = void >
-struct SuperClassTypeDeduction
-{
-    using Type = void;
-};
-
-template< typename T >
-struct SuperClassTypeDeduction< T, std::void_t<typename T::ThisType>>
-{
-    using Type = T::ThisType;
-};
-
-template< typename Super >
-struct TypeInfoInitializer
-{
-    static TypeInfo Init( const char* className )
-    {
-        return TypeInfo( className, Super::GetStaticTypeInfo() );
-    };
-};
-
-template<>
-struct TypeInfoInitializer< void >
-{
-    static TypeInfo Init( const char* className )
-    {
-        return TypeInfo( className );
-    }; 
-};
-
-#endif // __TYPEINFO_H__
+#endif // __TYPE_MACRO_H__
