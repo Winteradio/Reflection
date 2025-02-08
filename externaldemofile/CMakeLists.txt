@@ -101,10 +101,10 @@ MESSAGE( STATUS "Downloading Done" )
 
 # ------ Download ReflectionProject in Github ---------- #
 EXTERNALPROJECT_ADD(
-	ReflectionProject
+	ReflectionProject_Demo
 	GIT_REPOSITORY GIT_REPOSITORY https://github.com/Winteradio/Reflection.git
 
-	PREFIX ${CMAKE_BINARY_DIR}/Prefix/ReflectionProject
+	PREFIX ${CMAKE_BINARY_DIR}/Prefix/ReflectionProject_Demo
 
 	UPDATE_COMMAND "" PATCH_COMMAND "" TEST_COMMAND "" INSTALL_COMMAND ""
 	CMAKE_ARGS 
@@ -117,7 +117,7 @@ EXTERNALPROJECT_ADD(
  		-DINSTALL_DEMO_FILE=OFF 
 )
 
-LIST( APPEND DEP_LIST ReflectionProject )
+LIST( APPEND DEP_LIST ReflectionProject_Demo )
 LIST( APPEND DEP_INCLUDE ${DEMO_INCLUDE_DIR} )
 LIST( APPEND DEP_LIBS ${DEMO_ARC_DIR}/ReflectionProject.${STATIC_LIB} )
 

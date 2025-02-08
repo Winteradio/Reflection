@@ -20,7 +20,7 @@ MESSAGE( STATUS "Set Path" )
 
 ## Set Directories
 SET( MAIN_DIR ${CMAKE_SOURCE_DIR} )
-SET( DEMOFILE_DIR ${MAIN_DIR}/demofile )
+SET( DEMOFILE_DIR ${MAIN_DIR}/externaldemofile )
 
 SET( CORE_DIR ${MAIN_DIR}/Core )
 SET( METHODREFLECTION_DIR ${MAIN_DIR}/MethodReflection )
