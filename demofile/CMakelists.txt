@@ -37,7 +37,6 @@ LIST(APPEND SRCS
 
     ${TYPEREFLECTION_DIR}/TypeMacro.h
     ${TYPEREFLECTION_DIR}/TypeCast.h
-    ${TYPEREFLECTION_DIR}/TypeSignature.h
     ${TYPEREFLECTION_DIR}/TypeUtils.h ${TYPEREFLECTION_DIR}/TypeUtils.cpp
     ${TYPEREFLECTION_DIR}/TypeInfo.h ${TYPEREFLECTION_DIR}/TypeInfo.cpp
     ${TYPEREFLECTION_DIR}/TypeManager.h ${TYPEREFLECTION_DIR}/TypeManager.cpp
