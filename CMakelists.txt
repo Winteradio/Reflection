@@ -57,9 +57,10 @@ LIST( APPEND SOURCE_DIR
     ${PROPERTYREFLECTION_DIR}/PropertyInfo.h
 
     ${TYPEREFLECTION_DIR}/TypeMacro.h
-    ${TYPEREFLECTION_DIR}/TypeInfo.h ${TYPEREFLECTION_DIR}/TypeInfo.cpp
     ${TYPEREFLECTION_DIR}/TypeCast.h
-    ${TYPEREFLECTION_DIR}/TypeUtils.h
+    ${TYPEREFLECTION_DIR}/TypeUtils.h ${TYPEREFLECTION_DIR}/TypeUtils.cpp
+    ${TYPEREFLECTION_DIR}/TypeInfo.h ${TYPEREFLECTION_DIR}/TypeInfo.cpp
+    ${TYPEREFLECTION_DIR}/TypeManager.h ${TYPEREFLECTION_DIR}/TypeManager.cpp
     )
 
 IF ( WIN32 )

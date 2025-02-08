@@ -29,18 +29,18 @@ LIST(APPEND SRCS
     ## Demo file
     ${MAIN_DIR}/main.cpp
 
-    ${CORE_DIR}/Core.h
     ${CORE_DIR}/Platform.h
 
     ${METHODREFLECTION_DIR}/MethodMacro.h
 
     ${PROPERTYREFLECTION_DIR}/PropertyMacro.h
 
-    ${TYPEREFLECTION_DIR}/TypeInfo.h ${TYPEREFLECTION_DIR}/TypeInfo.cpp
-    ${TYPEREFLECTION_DIR}/TypeDetection.h
     ${TYPEREFLECTION_DIR}/TypeMacro.h
     ${TYPEREFLECTION_DIR}/TypeCast.h
-    ${TYPEREFLECTION_DIR}/TypeRemovePointer.h
+    ${TYPEREFLECTION_DIR}/TypeSignature.h
+    ${TYPEREFLECTION_DIR}/TypeUtils.h ${TYPEREFLECTION_DIR}/TypeUtils.cpp
+    ${TYPEREFLECTION_DIR}/TypeInfo.h ${TYPEREFLECTION_DIR}/TypeInfo.cpp
+    ${TYPEREFLECTION_DIR}/TypeManager.h ${TYPEREFLECTION_DIR}/TypeManager.cpp
 )
 
 LIST(APPEND INCS 
