@@ -27,7 +27,7 @@ namespace Hello
 {
     class NE_API Object : public IObject
     {
-        GENERATE( Hello::Object )
+        GENERATE( Object )
     };
 };
 

@@ -3,6 +3,8 @@
 
 #include "TypeInfo.h"
 
+#include <string>
+
 namespace Type
 {
 	namespace Utils
@@ -31,7 +33,7 @@ namespace Type
 		template<typename T>
 		struct TypeInitializer
 		{
-			static MetaData::TypeInfo Init(const char* className )
+			static MetaData::TypeInfo Init(const std::string& className )
 			{
 				return MetaData::TypeInfo( className, T::GetStaticTypeInfo() );
 			};
@@ -40,7 +42,7 @@ namespace Type
 		template<>
 		struct TypeInitializer<void>
 		{
-			static MetaData::TypeInfo Init(const char* className)
+			static MetaData::TypeInfo Init(const std::string& className)
 			{
 				return MetaData::TypeInfo(className);
 			}
@@ -78,6 +80,8 @@ namespace Type
 
 		template<typename T>
 		using RemovePointer_t = typename RemovePointer<T>::Type;
+
+		const std::string ConvertToType(const char* _pFuncSignature);
 	};
 };
 #endif // __TYPE_UTILS_H__

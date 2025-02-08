@@ -2,24 +2,24 @@
 
 namespace MetaData
 {
-    TypeInfo::TypeInfo(const char* _pName, const TypeInfo* _pSuper)
-        : m_pTypeName(_pName)
+    TypeInfo::TypeInfo(const std::string& _strName, const TypeInfo* _pSuper)
+        : m_strTypeName(_strName)
         , m_pSuper(_pSuper)
     {}
 
     TypeInfo::TypeInfo(const TypeInfo& _rhs)
-        : m_pTypeName(_rhs.m_pTypeName)
+        : m_strTypeName(_rhs.m_strTypeName)
         , m_pSuper(_rhs.m_pSuper)
     {}
 
     TypeInfo::TypeInfo(TypeInfo&& _rhs)
-        : m_pTypeName(_rhs.m_pTypeName)
+        : m_strTypeName(_rhs.m_strTypeName)
         , m_pSuper(_rhs.m_pSuper)
     {}
 
     bool TypeInfo::operator==(const TypeInfo& _rhs) const
     {
-        if ((m_pTypeName == _rhs.m_pTypeName) || (m_pSuper == _rhs.m_pSuper))
+        if ((m_strTypeName == _rhs.m_strTypeName) || (m_pSuper == _rhs.m_pSuper))
         {
             return true;
         }
@@ -39,8 +39,8 @@ namespace MetaData
         return m_pSuper;
     }
 
-    const char* TypeInfo::GetTypeName() const
+    const std::string& TypeInfo::GetTypeName() const
     {
-        return m_pTypeName;
+        return m_strTypeName;
     }
 }
