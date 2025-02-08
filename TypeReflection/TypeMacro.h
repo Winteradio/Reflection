@@ -3,6 +3,14 @@
 
 #include "TypeUtils.h"
 
+#if defined(_MSC_VER)
+	#define FUNCSIG __FUNCSIG__
+#elif defined(__GNUC__) || defined(__clang__)
+	#define FUNCSIG __PRETTY_FUNCTION__
+#else
+	#define FUNCSIG __func__
+#endif
+
 #define GENERATE( className ) \
     private : \
         friend Type::Utils::SuperTypeDetection; \
@@ -13,7 +21,7 @@
 \
         static const MetaData::TypeInfo* GetStaticTypeInfo() \
         { \
-            static MetaData::TypeInfo typeinfo(Type::Utils::TypeInitializer<SuperType>::Init(#className)); \
+            static MetaData::TypeInfo typeinfo(Type::Utils::TypeInitializer<SuperType>::Init(Type::Utils::ConvertToType(FUNCSIG))); \
             return &typeinfo; \
         } \
 \
