@@ -42,19 +42,16 @@ int MAIN()
     Object* value = new Object();
 
     IObject* ivalue = Type::Cast<IObject*>( value );
-    if (ivalue == nullptr)
-    {
-        LOGERROR() << "Failed to cast from Object to IObject";
-    }
 
     CObject* cvalue = Type::Cast<CObject*>( value );
-    if (cvalue == nullptr)
-    {
-        LOGERROR() << "Failed to cast from Object to CObject";
-    }
+
+    LOGINFO() << "IObject Type Index : " << IObject::GetStaticTypeInfo()->GetTypeIndex();
+    LOGINFO() << "Object Type Index : " << Object::GetStaticTypeInfo()->GetTypeIndex();
+    LOGINFO() << "CObject Type Index : " << CObject::GetStaticTypeInfo()->GetTypeIndex();
+    LOGINFO() << "Hello Object Type Index : " << Hello::Object::GetStaticTypeInfo()->GetTypeIndex();
 
     /* Compile Error
-    class NE_API IWrong 
+    class NE_API IWrong
     {};
 
     class NE_API Wrong : public IWrong

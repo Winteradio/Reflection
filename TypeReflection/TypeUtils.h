@@ -4,6 +4,7 @@
 #include "TypeInfo.h"
 
 #include <string>
+#include <atomic>
 
 namespace Type
 {
@@ -33,18 +34,18 @@ namespace Type
 		template<typename T>
 		struct TypeInitializer
 		{
-			static MetaData::TypeInfo Init(const std::string& className )
+			static MetaData::TypeInfo Init(const std::string& _className, const size_t _typeIndex)
 			{
-				return MetaData::TypeInfo( className, T::GetStaticTypeInfo() );
+				return MetaData::TypeInfo(_className, _typeIndex, T::GetStaticTypeInfo());
 			};
 		};
 
 		template<>
 		struct TypeInitializer<void>
 		{
-			static MetaData::TypeInfo Init(const std::string& className)
+			static MetaData::TypeInfo Init(const std::string& _className, const size_t _typeIndex)
 			{
-				return MetaData::TypeInfo(className);
+				return MetaData::TypeInfo(_className, _typeIndex);
 			}
 		};
 
@@ -82,6 +83,8 @@ namespace Type
 		using RemovePointer_t = typename RemovePointer<T>::Type;
 
 		const std::string ConvertToType(const char* _pFuncSignature);
+
+		extern std::atomic<size_t> GLOBAL_TYPE_INDEX;
 	};
 };
 #endif // __TYPE_UTILS_H__

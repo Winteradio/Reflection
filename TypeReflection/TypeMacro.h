@@ -21,7 +21,8 @@
 \
         static const MetaData::TypeInfo* GetStaticTypeInfo() \
         { \
-            static MetaData::TypeInfo typeinfo(Type::Utils::TypeInitializer<SuperType>::Init(Type::Utils::ConvertToType(FUNCSIG))); \
+            static const size_t s_localTypeIndex = ++Type::Utils::GLOBAL_TYPE_INDEX; \
+            static MetaData::TypeInfo typeinfo(Type::Utils::TypeInitializer<SuperType>::Init(Type::Utils::ConvertToType(FUNCSIG), s_localTypeIndex)); \
             return &typeinfo; \
         } \
 \

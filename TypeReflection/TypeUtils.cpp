@@ -45,5 +45,7 @@ namespace Type
 
 			return strFuncSignature;
 		}
+
+		std::atomic<size_t> GLOBAL_TYPE_INDEX{0};
 	}
 }
