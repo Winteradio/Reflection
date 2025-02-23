@@ -44,6 +44,11 @@ int MAIN()
 
     CObject* cvalue = Type::Cast<CObject*>( value );
 
+    LOGINFO() << "IObject Type Index : " << IObject::GetStaticTypeInfo()->GetTypeIndex();
+    LOGINFO() << "Object Type Index : " << Object::GetStaticTypeInfo()->GetTypeIndex();
+    LOGINFO() << "CObject Type Index : " << CObject::GetStaticTypeInfo()->GetTypeIndex();
+    LOGINFO() << "Hello Object Type Index : " << Hello::Object::GetStaticTypeInfo()->GetTypeIndex();
+
     /* Compile Error
     class NE_API IWrong
     {};

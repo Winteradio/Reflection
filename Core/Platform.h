@@ -12,7 +12,6 @@
 #elif __linux__
     #define MAIN() main()
     #define PLATFORM "Linux"
-
 #endif
 
 #endif // __PLATFORM_H__

@@ -9,7 +9,7 @@ namespace MetaData
 	{
 		public :
 			TypeInfo() = delete;
-			explicit TypeInfo(const std::string& _strName, const TypeInfo* _pSuper = nullptr);
+			explicit TypeInfo(const std::string& _strName, const size_t _typeIndex, const TypeInfo* _pSuper = nullptr);
 			TypeInfo(const TypeInfo& _rhs);
 			TypeInfo(TypeInfo&& _rhs);
 
@@ -20,10 +20,12 @@ namespace MetaData
 
 			const TypeInfo* GetSuper() const;
 			const std::string& GetTypeName() const;
+			const size_t GetTypeIndex() const;
 
 		private :
 			const std::string m_strTypeName;
 			const TypeInfo* m_pSuper;
+			const size_t m_typeIndex;
 	};
 };
 
