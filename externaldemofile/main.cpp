@@ -32,6 +32,55 @@ namespace Hello
     };
 };
 
+template<typename T>
+class Operator
+{
+    public :
+        Operator()
+        {
+            LOGINFO() << "Operator Constructor";
+        }
+
+        Operator(const T* value)
+            : m_pValue( value )
+        {
+            LOGINFO() << "Operator Constructor";
+        }
+
+        ~Operator()
+        {
+            LOGINFO() << "Operator Destructor";
+        }
+
+        Operator& operator=(const Operator<T>& other)
+        {
+            LOGINFO() << "Operator =";
+            m_pValue = other.m_pValue;
+            return *this;
+        }
+
+        const T& operator*()
+        {
+            LOGINFO() << "Operator *";
+            return *m_pValue;
+        }
+
+        T* operator->()
+        {
+            LOGINFO() << "Operator ->";
+            return m_pValue;
+        }
+
+    private :
+        const T* m_pValue;
+}
+
+class Test
+{
+    public :
+        Operator<CObject> m_pCObject;
+};
+
 int MAIN()
 {
     Log::Init(1024, Log::Enum::eMode_Print, Log::Enum::eLevel_Time | Log::Enum::eLevel_Type);
@@ -49,6 +98,10 @@ int MAIN()
     LOGINFO() << "Object Type Index : " << Object::GetStaticTypeInfo()->GetTypeIndex();
     LOGINFO() << "CObject Type Index : " << CObject::GetStaticTypeInfo()->GetTypeIndex();
     LOGINFO() << "Hello Object Type Index : " << Hello::Object::GetStaticTypeInfo()->GetTypeIndex();
+
+    Operator<Test> test(new Test());
+
+    test->m_pCObject = Operator<CObject>(new CObject());
 
     /* Compile Error
     class NE_API IWrong

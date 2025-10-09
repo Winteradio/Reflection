@@ -22,7 +22,7 @@ namespace MetaData
 
     bool TypeInfo::operator==(const TypeInfo& _rhs) const
     {
-        if ((m_strTypeName == _rhs.m_strTypeName) || (m_pSuper == _rhs.m_pSuper) || (m_typeIndex == _rhs.m_typeIndex))
+        if (m_typeIndex == _rhs.m_typeIndex)
         {
             return true;
         }
