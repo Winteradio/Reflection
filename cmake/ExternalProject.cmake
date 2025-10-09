@@ -31,7 +31,7 @@ function(add_external_library)
 	cmake_parse_arguments(
 		ARG # Options / Single Value / Multi Value
 		""	
-		"PROJECT_NAME;LIBRARY_NAME;GIT_REPOSITORY;GIT_TAG;UPDATE_COMMAND;PATCH_COMMAND;TEST_COMMAND;BUILD_SHARED_LIBRARY;BUILD_DEMO_FILE"
+		"PROJECT_NAME;LIBRARY_NAME;GIT_REPOSITORY;GIT_TAG;UPDATE_COMMAND;PATCH_COMMAND;TEST_COMMAND;BUILD_SHARED_LIBS;BUILD_DEMO_FILE"
 		""
 		${ARGN})
 
@@ -63,8 +63,8 @@ function(add_external_library)
 		set(ARG_TEST_COMMAND "")
 	endif()
 
-	if (NOT DEFINED ARG_BUILD_SHARED_LIBRARY)
-		set(ARG_BUILD_SHARED_LIBRARY ON)
+	if (NOT DEFINED ARG_BUILD_SHARED_LIBS)
+		set(ARG_BUILD_SHARED_LIBS ON)
 	endif()
 
 	if (NOT DEFINED ARG_BUILD_DEDMO_FILE)
@@ -77,7 +77,7 @@ function(add_external_library)
 	message(STATUS "- The External Include Directory : ${EXT_INCLUDE_DIR}")
 	message(STATUS "- The External Library Directory : ${EXT_LIB_DIR}")
 	message(STATUS "- The External Binary Directory : ${EXT_BIN_DIR}")
-	message(STATUS "- The External Library Type : ${ARG_BUILD_SHARED_LIBRARY}")
+	message(STATUS "- The External Library Type : ${ARG_BUILD_SHARED_LIBS}")
 
 	ExternalProject_Add(
 		${ARG_PROJECT_NAME}
@@ -94,7 +94,7 @@ function(add_external_library)
 			-DLIB_DIR=${EXT_LIB_DIR}
 			-DBIN_DIR=${EXT_BIN_DIR}
 			-DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
-			-DBUILD_SHARED_LIBRARY=${ARG_BUILD_SHARED_LIBRARY}
+			-DBUILD_SHARED_LIBS=${ARG_BUILD_SHARED_LIBS}
  			-DBUILD_DEMO_FILE=${ARG_BUILD_DEMO_FILE}
 	)
 

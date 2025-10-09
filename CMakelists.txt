@@ -37,9 +37,9 @@ set(HEADER_LIST
 )
 
 set(SOURCE_LIST
-    ${TYPEREFLECTION_DIR}/TypeUtils.cpp
-    ${TYPEREFLECTION_DIR}/TypeInfo.cpp
-    ${TYPEREFLECTION_DIR}/TypeManager.cpp
+    ${TYPE_REFLECTION_DIR}/TypeUtils.cpp
+    ${TYPE_REFLECTION_DIR}/TypeInfo.cpp
+    ${TYPE_REFLECTION_DIR}/TypeManager.cpp
 )
 
 create_library(
