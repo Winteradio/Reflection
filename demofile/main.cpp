@@ -1,7 +1,8 @@
 #include <iostream>
 #include <unordered_map>
 #include <LogProject/Log.h>
-#include "Platform.h"
+#include <LogProject/LogPlatform.h>
+#include "TypeMacro.h"
 #include "TypeCast.h"
 
 #define NE_API
@@ -84,7 +85,6 @@ class Test
 int MAIN()
 {
     Log::Init(1024, Log::Enum::eMode_Print, Log::Enum::eLevel_Time | Log::Enum::eLevel_Type);
-    LOGINFO() << "Platform : " << PLATFORM;
     LOGINFO() << "Object This Type : " << Hello::Object::GetStaticTypeInfo()->GetTypeName(); 
     LOGINFO() << "Object Super Type : " << Hello::Object::SuperType::GetStaticTypeInfo()->GetTypeName();
 
@@ -126,6 +126,7 @@ int MAIN()
     {
         LOGINFO() << "Type Name : " << key.GetTypeName() << ", Type Index : " << key.GetTypeIndex() << ", Value : " << value;
     }
+
     /* Compile Error
     class NE_API IWrong
     {};

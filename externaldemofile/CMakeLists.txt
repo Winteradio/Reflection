@@ -4,9 +4,6 @@ message(STATUS "# Set the basic options for the external demo project")
 cmake_minimum_required(VERSION 3.20)
 project(ExtDemofile LANGUAGES CXX)
 
-include(${CMAKE_CURRENT_SOURCE_DIR}/../cmake/Project.cmake)
-project_options()
-
 # ------ Create the executable program ------ #
 if (WIN32)
     message(STATUS "- Demo Platform : Windows")
@@ -15,6 +12,10 @@ else()
     message(STATUS "- Demo Platform : Others")
     add_executable(${PROJECT_NAME})
 endif()
+
+# ------ Set the project options ------ #
+include(${CMAKE_CURRENT_SOURCE_DIR}/../cmake/Project.cmake)
+project_options()
 
 # ------ Load the extenral project ------ #
 include(${CMAKE_CURRENT_SOURCE_DIR}/../cmake/ExternalProject.cmake)

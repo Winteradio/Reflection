@@ -1,6 +1,6 @@
 #include <iostream>
 #include <LogProject/Log.h>
-#include <ReflectionProject/Platform.h>
+#include <LogProject/LogPlatform.h>
 #include <ReflectionProject/TypeMacro.h>
 #include <ReflectionProject/TypeCast.h>
 
@@ -84,7 +84,6 @@ class Test
 int MAIN()
 {
     Log::Init(1024, Log::Enum::eMode_Print, Log::Enum::eLevel_Time | Log::Enum::eLevel_Type);
-    LOGINFO() << "Platform : " << PLATFORM;
     LOGINFO() << "Object This Type : " << Hello::Object::GetStaticTypeInfo()->GetTypeName(); 
     LOGINFO() << "Object Super Type : " << Hello::Object::SuperType::GetStaticTypeInfo()->GetTypeName();
 
