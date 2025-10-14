@@ -68,8 +68,6 @@ function(install_library)
 	message(STATUS "- The library Path : ${LIB_DIR}")
 	message(STATUS "- The include Path : ${INCLUDE_DIR}")
 
-	message(${ARG_PUBLIC_INCLUDE_DIRS})
-
 	target_include_directories(${ARG_TARGET_NAME} PUBLIC ${ARG_PUBLIC_INCLUDE_DIRS} ${INCLUDE_DIR})
 
 	install(TARGETS ${ARG_TARGET_NAME}

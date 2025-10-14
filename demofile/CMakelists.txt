@@ -32,9 +32,7 @@ add_external_library(
 set(MAIN_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 
 set(HEADER_LIST 
-    ${MAIN_DIR}/../MethodReflection
-    ${MAIN_DIR}/../PropertyReflection
-    ${MAIN_DIR}/../TypeReflection
+    ${MAIN_DIR}/../include
 )
 
 target_sources(${PROJECT_NAME} PRIVATE
@@ -44,4 +42,4 @@ target_sources(${PROJECT_NAME} PRIVATE
 message(STATUS "${HEADER_LIST}")
 
 target_include_directories(${PROJECT_NAME} PUBLIC ${HEADER_LIST})
-target_link_libraries(${PROJECT_NAME} PRIVATE ReflectionProject)
+target_link_libraries(${PROJECT_NAME} PUBLIC ReflectionProject)

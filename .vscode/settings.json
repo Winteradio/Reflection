@@ -2,7 +2,8 @@
     "files.associations": {
         "ostream": "cpp",
         "xtr1common": "cpp",
-        "type_traits": "cpp"
+        "type_traits": "cpp",
+        "unordered_map": "cpp"
     },
     "C_Cpp.errorSquiggles": "disabled"
 }
