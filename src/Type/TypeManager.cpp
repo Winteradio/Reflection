@@ -1,4 +1,4 @@
-#include "Reflection/TypeManager.h"
+#include "Type/TypeManager.h"
 
 namespace Reflection
 {

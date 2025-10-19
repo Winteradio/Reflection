@@ -2,14 +2,22 @@
 #define __REFLECTION_TYPEINFO_H__
 
 #include <typeinfo>
+#include <unordered_map>
 #include <string>
 
-#include "Reflection/Utils.h"
+#include "Utils.h"
 
 namespace Reflection
 {
+	class PropertyInfo;
+	class MethodInfo;
+
 	class TypeInfo
 	{
+		public :
+			using PropertyMap = std::unordered_map<std::string, const PropertyInfo*>;
+			using MethodMap = std::unordered_map<std::string, const MethodInfo*>;
+
 		public:
 			template<typename T>
 			using ValidSuper = typename Utils::IsEnabled<!Utils::IsSame<typename T::SuperType, void>::value>::Type;
@@ -48,6 +56,8 @@ namespace Reflection
 				: m_superType(initializer.superType)
 				, m_typeHash(initializer.typeHash)
 				, m_typeName(initializer.typeName)
+				, m_properties()
+				, m_methods()
 			{}
 
 			bool operator==(const TypeInfo& other) const;
@@ -57,13 +67,22 @@ namespace Reflection
 			const size_t GetTypeHash() const;
 			const std::string& GetTypeName() const;
 
-			void AddProperty();
-			void AddMethod();
+			void AddProperty(const PropertyInfo* property);
+			void AddMethod(const MethodInfo* method);
+
+			const PropertyInfo* GetProperty(const std::string& name) const;
+			const MethodInfo* GetMethod(const std::string& name) const;
+
+			const PropertyMap& GetProperties() const;
+			const MethodMap& GetMethods() const;
 
 		private :
 			const TypeInfo*		m_superType;
 			const size_t		m_typeHash;
 			const std::string	m_typeName;
+
+			PropertyMap			m_properties;
+			MethodMap			m_methods;
 	};
 };
 

@@ -50,7 +50,7 @@ function(install_library)
 		ARG # Options / Single Value / Multi Value
 		""	
 		"TARGET_NAME;"
-		"PUBLIC_HEADERS;PUBLIC_INCLUDE_DIRS"
+		"PUBLIC_INCLUDE_DIRS"
 		${ARGN})
 
 	if (NOT DEFINED ARG_TARGET_NAME)
@@ -76,7 +76,7 @@ function(install_library)
 		LIBRARY DESTINATION ${LIB_DIR}
 	)
 
-	install(FILES ${ARG_PUBLIC_HEADERS} DESTINATION ${INCLUDE_DIR}/${ARG_TARGET_NAME})
+	install(DIRECTORY ${ARG_PUBLIC_INCLUDE_DIRS}/ DESTINATION ${INCLUDE_DIR}/${ARG_TARGET_NAME})
 
 endfunction()
 

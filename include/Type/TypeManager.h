@@ -2,9 +2,8 @@
 #define __REFLECTION_TYPEMANAGER_H__
 
 #include <unordered_map>
-#include <string>
 
-#include "Reflection/TypeInfo.h"
+#include "Type/TypeInfo.h"
 
 namespace Reflection
 {
@@ -34,11 +33,11 @@ namespace Reflection
 			}
 
 			template<typename T>
-			TypeInfo* GetTypeInfo()
+			const TypeInfo* GetTypeInfo()
 			{
-				const std::string strTypeName = typeid(T).name();
+				const size_t typeHash = typeid(T).hash_code();
 
-				const auto itr = m_typeMap.find(strTypeName);
+				auto itr = m_typeMap.find(typeHash);
 				if (itr != m_typeMap.end())
 				{
 					return itr->second;
@@ -48,6 +47,9 @@ namespace Reflection
 					return Register<T>();
 				}
 			}
+
+		private:
+			const std::string GetTypeName(const char* name);
 
 		private :
 			TypeMap m_typeMap;

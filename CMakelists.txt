@@ -4,7 +4,7 @@ project(ReflectionProject LANGUAGES CXX)
 # ------ Create the library ------ #
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/Library.cmake)
 
-option(BUILD_SHARED_LIBS "Build a shared library instead of a static one" OFF)
+option(BUILD_SHARED_LIBS "Build a shared library instead of a static one" ON)
 
 set(MAIN_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 set(HEADER_DIR ${MAIN_DIR}/include)
@@ -15,22 +15,30 @@ set(INCLUDE_DIR_LIST
 )
 
 set(HEADER_LIST
-    ${HEADER_DIR}/Reflection/Macro.h
-    ${HEADER_DIR}/Reflection/MethodInfo.h
-    ${HEADER_DIR}/Reflection/PropertyInfo.h
-    ${HEADER_DIR}/Reflection/Reflection.h
-    ${HEADER_DIR}/Reflection/TypeCast.h
-    ${HEADER_DIR}/Reflection/TypeInfo.h
-    ${HEADER_DIR}/Reflection/TypeManager.h
-    ${HEADER_DIR}/Reflection/Utils.h
+    ${HEADER_DIR}/Reflection.h
+    ${HEADER_DIR}/Utils.h
+
+    ${HEADER_DIR}/Method/MethodCall.h
+    ${HEADER_DIR}/Method/MethodInfo.h
+    ${HEADER_DIR}/Method/MethodMacro.h
+
+    ${HEADER_DIR}/Property/PropertyInfo.h
+    ${HEADER_DIR}/Property/PropertyMacro.h
+
+    ${HEADER_DIR}/Type/TypeCast.h
+    ${HEADER_DIR}/Type/TypeInfo.h
+    ${HEADER_DIR}/Type/TypeMacro.h
+    ${HEADER_DIR}/Type/TypeManager.h
 )
 
 set(SOURCE_LIST
-    ${SOURCE_DIR}/MethodInfo.cpp
-    ${SOURCE_DIR}/PropertyInfo.cpp
-    ${SOURCE_DIR}/TypeInfo.cpp
-    ${SOURCE_DIR}/TypeManager.cpp
-    ${SOURCE_DIR}/Utils.cpp
+    ${SOURCE_DIR}/Method/MethodInfo.cpp
+
+    ${SOURCE_DIR}/Property/PropertyInfo.cpp
+
+    ${SOURCE_DIR}/Type/TypeCast.cpp
+    ${SOURCE_DIR}/Type/TypeInfo.cpp
+    ${SOURCE_DIR}/Type/TypeManager.cpp
 )
 
 create_library(

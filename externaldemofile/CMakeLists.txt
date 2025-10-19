@@ -33,7 +33,6 @@ add_external_library(
     PROJECT_NAME ReflectionProject_Ext
     LIBRARY_NAME ReflectionProject
     GIT_REPOSITORY https://github.com/Winteradio/Reflection.git
-    GIT_TAG CMAKE_TEST
     BUILD_SHARED_LIBS ON
 )
 
