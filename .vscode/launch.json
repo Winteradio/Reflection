@@ -9,7 +9,7 @@
             "type": "lldb",
             "request": "launch",
             "name": "LLDB",
-            "program": "${workspaceFolder}/demofile/build/Debug/Demofile.exe",
+            "program": "${workspaceFolder}/build/demofile/Debug/Demofile.exe",
             "args": [],
             "cwd": "${workspaceFolder}"
         }
@@ -18,7 +18,7 @@
             "name" : "VSDBG",
             "type" : "cppvsdbg",
             "request" : "launch",
-            "program" : "${workspaceFolder}/demofile/build/Debug/Demofile.exe",
+            "program" : "${workspaceFolder}/build/demofile/Debug/Demofile.exe",
             "args" : [],
             "cwd" : "${workspaceFolder}",
             "stopAtEntry" : false,

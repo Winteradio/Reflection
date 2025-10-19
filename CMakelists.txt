@@ -1,132 +1,77 @@
-# ------ Set Options for Projects --------------- #
-MESSAGE( STATUS "Set Options for Project" )
+cmake_minimum_required(VERSION 3.20)
+project(ReflectionProject LANGUAGES CXX)
 
-## CMake minimum version required
-CMAKE_MINIMUM_REQUIRED( VERSION 3.20 )
-## Make Project Name
-SET( PROJECT_NAME "ReflectionProject" )
-## Project name
-PROJECT(${PROJECT_NAME})
-## Set C++ Compiler Version : C++17
-SET( CMAKE_CXX_STANDARD 17 )
+# ------ Create the library ------ #
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/Library.cmake)
 
-MESSAGE( STATUS "Setting Done" )
-# ----------------------------------------------- #
+option(BUILD_SHARED_LIBS "Build a shared library instead of a static one" ON)
 
+set(MAIN_DIR ${CMAKE_CURRENT_SOURCE_DIR})
+set(HEADER_DIR ${MAIN_DIR}/include)
+set(SOURCE_DIR ${MAIN_DIR}/src)
 
+set(INCLUDE_DIR_LIST
+    ${MAIN_DIR}/include
+)
 
-# ------ Set Path ------------------------------ #
-MESSAGE( STATUS "Set Path" )
+set(HEADER_LIST
+    ${HEADER_DIR}/Reflection.h
+    ${HEADER_DIR}/Utils.h
 
-## Set Directories
-SET( MAIN_DIR ${CMAKE_SOURCE_DIR} )
-SET( DEMOFILE_DIR ${MAIN_DIR}/externaldemofile )
+    ${HEADER_DIR}/Method/MethodCall.h
+    ${HEADER_DIR}/Method/MethodInfo.h
+    ${HEADER_DIR}/Method/MethodMacro.h
 
-SET( CORE_DIR ${MAIN_DIR}/Core )
-SET( METHODREFLECTION_DIR ${MAIN_DIR}/MethodReflection )
-SET( PROPERTYREFLECTION_DIR ${MAIN_DIR}/PropertyReflection )
-SET( TYPEREFLECTION_DIR ${MAIN_DIR}/TypeReflection )
+    ${HEADER_DIR}/Property/PropertyInfo.h
+    ${HEADER_DIR}/Property/PropertyMacro.h
 
-MESSAGE( STATUS "Setting Done" )
-# ------------------------------------------------ #
+    ${HEADER_DIR}/Type/TypeCast.h
+    ${HEADER_DIR}/Type/TypeInfo.h
+    ${HEADER_DIR}/Type/TypeMacro.h
+    ${HEADER_DIR}/Type/TypeManager.h
+)
 
+set(SOURCE_LIST
+    ${SOURCE_DIR}/Method/MethodInfo.cpp
 
+    ${SOURCE_DIR}/Property/PropertyInfo.cpp
 
-# ------ Set Option ----------------------------- #
-MESSAGE( STATUS "Set Option" )
+    ${SOURCE_DIR}/Type/TypeCast.cpp
+    ${SOURCE_DIR}/Type/TypeInfo.cpp
+    ${SOURCE_DIR}/Type/TypeManager.cpp
+)
 
-OPTION( BUILD_STATIC_LIBRARY "Set option for the library which is static or dynamic" OFF )
-OPTION( INSTALL_DEMO_FILE "Install demofile for Reflection System" ON )
-## Set Option for install lib, header files' path
-SET( INCLUDE_DIR ${MAIN_DIR}/build/include CACHE PATH "Header files Path" )
-SET( ARC_DIR ${MAIN_DIR}/build/arc CACHE PATH "Archeive files Path")
-SET( LIB_DIR ${MAIN_DIR}/build/lib CACHE PATH "Library files Path" )
-SET( BIN_DIR ${MAIN_DIR}/build/bin CACHE PATH "Binary files Path ")
-SET( CMAKE_BUILD_TYPE Debug CACHE STRING "Build Type")
+create_library(
+    SHARED_LIBRARY ${BUILD_SHARED_LIBS}
+    TARGET_NAME ${PROJECT_NAME}
+    PUBLIC_HEADERS ${HEADER_LIST}
+    PRIVATE_SOURCES ${SOURCE_LIST}
+)
 
-MESSAGE( STATUS ${CMAKE_BUILD_TYPE} )
+install_library(
+    TARGET_NAME ${PROJECT_NAME}
+    PUBLIC_HEADERS ${HEADER_LIST}
+    PUBLIC_INCLUDE_DIRS ${INCLUDE_DIR_LIST}
+)
 
-LIST( APPEND FOLDER_DIR ${CORE_DIR} ${METHODREFLECTION_DIR} ${PROPERTYREFLECTION_DIR} ${TYPEREFLECTION_DIR} )
-LIST( APPEND SOURCE_DIR 
-    ${CORE_DIR}/Platform.h
+# ------ Set the project options ------ #
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/Project.cmake)
 
-    ${METHODREFLECTION_DIR}/MethodMacro.h
-    ${METHODREFLECTION_DIR}/MethodInfo.h
+project_options()
 
-    ${PROPERTYREFLECTION_DIR}/PropertyMacro.h
-    ${PROPERTYREFLECTION_DIR}/PropertyInfo.h
+# ------ Create the Demofile ------ #
+option(BUILD_DEMO_FILE "Build the demo file" ON)
 
-    ${TYPEREFLECTION_DIR}/TypeMacro.h
-    ${TYPEREFLECTION_DIR}/TypeCast.h
-    ${TYPEREFLECTION_DIR}/TypeUtils.h ${TYPEREFLECTION_DIR}/TypeUtils.cpp
-    ${TYPEREFLECTION_DIR}/TypeInfo.h ${TYPEREFLECTION_DIR}/TypeInfo.cpp
-    ${TYPEREFLECTION_DIR}/TypeManager.h ${TYPEREFLECTION_DIR}/TypeManager.cpp
-    )
+if (BUILD_DEMO_FILE)
+    message(STATUS "# Create the demofile project")
 
-IF ( WIN32 )
-    MESSAGE( STATUS "Windows Platform for library")
-    SET( CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS 1 )
-ENDIF()
+    if (BUILD_SHARED_LIBS)
+        set(EXTDEMOFILE_DIR ${MAIN_DIR}/externaldemofile)
 
-INCLUDE_DIRECTORIES( ${FOLDER_DIR} )
-
-MESSAGE( STATUS "Setting Done ")
-# ----------------------------------------------- #
-
-
-# ------ Create library ------------------------- #
-MESSAGE(STATUS "Create Library ")
-
-IF ( BUILD_STATIC_LIBRARY )
-    ADD_LIBRARY( ${PROJECT_NAME} STATIC ${SOURCE_DIR} )
-    MESSAGE( STATUS "Build library as a static" )
-ELSE ()
-    ADD_LIBRARY( ${PROJECT_NAME} SHARED ${SOURCE_DIR} )
-    MESSAGE( STATUS "Build library as a dynamic" )
-ENDIF()
-
-FOREACH( FOLDER ${FOLDER_DIR} )
-    FILE( COPY ${FOLDER}/ DESTINATION ${INCLUDE_DIR}/${PROJECT_NAME}
-        FILES_MATCHING PATTERN "*.h" )
-ENDFOREACH()
-
-IF ( CMAKE_BUILD_TYPE MATCHES Debug )
-    SET_TARGET_PROPERTIES( ${PROJECT_NAME} PROPERTIES
-        ARCHIVE_OUTPUT_DIRECTORY_DEBUG ${ARC_DIR}
-        LIBRARY_OUTPUT_DIRECTORY_DEBUG ${LIB_DIR}
-        RUNTIME_OUTPUT_DIRECTORY_DEBUG ${BIN_DIR}
-    )
-    MESSAGE( STATUS "Build library on Debug mode" )
-ELSEIF ( CMAKE_BUILD_TYPE MATCHES Release )
-    SET_TARGET_PROPERTIES( ${PROJECT_NAME} PROPERTIES
-        ARCHIVE_OUTPUT_DIRECTORY_RELEASE ${ARC_DIR}
-        LIBRARY_OUTPUT_DIRECTORY_RELEASE ${LIB_DIR}
-        RUNTIME_OUTPUT_DIRECTORY_RELEASE ${BIN_DIR}
-    )
-    MESSAGE( STATUS "Build library on Release mode" )
-ELSE()
-    SET_TARGET_PROPERTIES( ${PROJECT_NAME} PROPERTIES
-        ARCHIVE_OUTPUT_DIRECTORY ${ARC_DIR}
-        LIBRARY_OUTPUT_DIRECTORY ${LIB_DIR}
-        RUNTIME_OUTPUT_DIRECTORY ${BIN_DIR}
-    )
-    MESSAGE( STATUS "Build library on Other mode" )
-ENDIF()
-
-MESSAGE( STATUS "Creating Done ")
-# ----------------------------------------------- #
-
-
-
-# ------ Create Demofile ------------------------ #
-MESSAGE( STATUS "Create Demofile")
-
-IF ( INSTALL_DEMO_FILE )
-    ADD_SUBDIRECTORY( ${DEMOFILE_DIR} )
-    MESSAGE( STATUS "Install Demofile that use Reflection System" )
-ELSE()
-    MESSAGE( STATUS "Do not install Reflection System's Demofile" )
-ENDIF()
-
-MESSAGE( STATUS "Create Done")
-# ----------------------------------------------- #
+        add_subdirectory(${EXTDEMOFILE_DIR})
+    else()
+        set(DEMOFILE_DIR ${MAIN_DIR}/demofile)
+        
+        add_subdirectory(${DEMOFILE_DIR})
+    endif()
+endif()
