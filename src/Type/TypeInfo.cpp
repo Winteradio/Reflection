@@ -22,6 +22,11 @@ namespace Reflection
 		return m_superType;
 	}
 
+	const TypeInfo* TypeInfo::GetPureType() const
+	{
+		return m_pureType;
+	}
+
 	const size_t TypeInfo::GetTypeHash() const
 	{
 		return m_typeHash;

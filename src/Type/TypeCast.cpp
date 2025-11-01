@@ -14,17 +14,17 @@ namespace Reflection
 		}
 	}
 
-	bool IsChild(const TypeInfo* lhsType, const TypeInfo* rhsType)
+	bool IsChild(const TypeInfo* parentType, const TypeInfo* childType)
 	{
-		if ((lhsType == nullptr) || (rhsType == nullptr))
+		if ((parentType == nullptr) || (childType == nullptr))
 		{
 			return false;
 		}
 
-		const TypeInfo* superType = rhsType->GetSuperType();
+		const TypeInfo* superType = childType->GetSuperType();
 		while (superType != nullptr)
 		{
-			if (*lhsType == *superType)
+			if (*parentType == *superType)
 			{
 				return true;
 			}

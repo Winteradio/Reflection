@@ -4,7 +4,7 @@ project(ReflectionProject LANGUAGES CXX)
 # ------ Create the library ------ #
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/Library.cmake)
 
-option(BUILD_SHARED_LIBS "Build a shared library instead of a static one" ON)
+option(BUILD_SHARED_LIBS "Build a shared library instead of a static one" OFF)
 
 set(MAIN_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 set(HEADER_DIR ${MAIN_DIR}/include)
