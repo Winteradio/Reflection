@@ -4,306 +4,346 @@
 
 class IObject
 {
-    GENERATE(IObject);
+	GENERATE(IObject);
 
-    public :
-        IObject()
-            : m_Value(-1)
-        {}
+	public :
+		IObject() : m_Value(-1) {}
+		virtual ~IObject() = default;
 
-        virtual ~IObject() = default;
+	public :
+		virtual void Hello(const int value)
+		{
+			LOGINFO() << "Member IObject::Hello " << value;
+		};
 
-    public :
-        PROPERTY(m_Value);
-        int m_Value;
+	public :
+		PROPERTY(m_Value);
+		int m_Value;
+
+		// PROPERTY(m_RefValue);
+		// int& m_RefValue = m_Value;
+
+		// The Reference member variable is not supported in the reflection system.
+		// The Reference type cannot be properly handled for offset calculation and memory management.
+		// Hence, it is commented out to avoid potential issues.
+
+		// This code occurs compilation error C2338: Reflection::PROPERTY : The property cannot be a reference type.
 };
 
 class ObjectA : public IObject
 {
-    GENERATE(ObjectA);
+	GENERATE(ObjectA);
 
-    public :
-        ObjectA()
-            : m_Value(1)
-        {}
+	public :
+		ObjectA() : m_Value(1), m_Other(10)	{}
+		virtual ~ObjectA() = default;
 
-        virtual ~ObjectA() = default;
+	public :
+		virtual void Hello(const int value)
+		{
+			LOGINFO() << "Member ObjectA::Hello " << value;
+		};
 
-    public :
-        PROPERTY(m_Value);
-        int m_Value;
+	public :
+		PROPERTY(m_Value);
+		int m_Value;
 
-        PROPERTY(m_Other);
-        int m_Other;
+		PROPERTY(m_Other);
+		int m_Other;
 };
 
 class ObjectB : public ObjectA
 {
-    GENERATE(ObjectB);
+	GENERATE(ObjectB);
 
-    public :
-        ObjectB()
-            : m_Value(2)
-        {};
+	public :
+		ObjectB() : m_Value(2) {};
 
-    public :
-        METHOD(Hello);
-        void Hello(const int value) 
-        {
-            LOGINFO() << "Member Hello " << value;
-        };
+	public :
+		METHOD(Hello);
+		void Hello(const int value) final
+		{
+			LOGINFO() << "Member ObjectB::Hello " << value;
+		};
 
-        METHOD(ConstHello);
-        void ConstHello(const int value1, const float value2) const 
-        {
-            LOGINFO() << "Member Const Hello " << value1 << " " << value2;
-        };
+		METHOD(ConstHello);
+		void ConstHello(const int value1, const float value2) const 
+		{
+			LOGINFO() << "Member Const Hello " << value1 << " " << value2;
+		};
 
-        METHOD(StaticHello);
-        static void StaticHello(const float value1) 
-        {
-            LOGINFO() << "Static Hello " << value1;
-        };
+		METHOD(StaticHello);
+		static void StaticHello(const float value1) 
+		{
+			LOGINFO() << "Static Hello " << value1;
+		};
 
-        PROPERTY(m_Value);
-        int m_Value;
+		PROPERTY(m_Value);
+		int m_Value;
 };
 
 class ObjectHolder
 {
-    GENERATE(ObjectHolder);
+	GENERATE(ObjectHolder);
 
 public:
-    ObjectHolder()
-        : m_MyObject(new ObjectB())
-    {
-        m_MyObject->m_Value = 99;
-    }
-
-    ~ObjectHolder()
-    {
-        delete m_MyObject;
-    }
+	ObjectHolder(): m_MyObject(nullptr)	{}
 
 public:
-    PROPERTY(m_MyObject);
-    ObjectB* m_MyObject;
+	PROPERTY(m_MyObject);
+	ObjectA* m_MyObject;
 };
 
 namespace Test
 {
-    void Print(const Reflection::PropertyInfo* propertyInfo)
-    {
-        if (propertyInfo == nullptr)
-        {
-            LOGERROR() << "The property info is invalid";
-            return;
-        }
+	void Print(const Reflection::PropertyInfo* propertyInfo)
+	{
+		if (propertyInfo == nullptr)
+		{
+			LOGERROR() << "The property info is invalid";
+			return;
+		}
 
-        LOGINFO() << "  Property " 
-                    << " Type : " << propertyInfo->GetPropertyType()->GetTypeName()
-                    << " / Name : " << propertyInfo->GetPropertyName();
-    }
+		if (propertyInfo->GetPropertyType() != propertyInfo->GetPropertyType()->GetPureType())
+		{
+			LOGINFO() << "  Property " 
+						<< " Type : " << propertyInfo->GetPropertyType()->GetTypeName()
+						<< " / Pure Type : " << propertyInfo->GetPropertyType()->GetPureType()->GetTypeName()
+						<< " / Name : " << propertyInfo->GetPropertyName();
+		}
+		else
+		{
+			LOGINFO() << "  Property " 
+						<< " Type : " << propertyInfo->GetPropertyType()->GetTypeName()
+						<< " / Name : " << propertyInfo->GetPropertyName();
+		}
+	}
 
-    void Print(const Reflection::MethodInfo* methodInfo)
-    {
-        if (methodInfo == nullptr)
-        {
-            LOGERROR() << "The method info is invalid";
-            return;
-        }
+	void Print(const Reflection::MethodInfo* methodInfo)
+	{
+		if (methodInfo == nullptr)
+		{
+			LOGERROR() << "The method info is invalid";
+			return;
+		}
 
-        LOGINFO() << "  Method "
-                    << " Type : " << methodInfo->GetMethodType()->GetTypeName()
-                    << " / Name : " << methodInfo->GetMethodName();
-    }
+		LOGINFO() << "  Method "
+					<< " Type : " << methodInfo->GetMethodType()->GetTypeName()
+					<< " / Name : " << methodInfo->GetMethodName();
+	}
 
-    void Print(const Reflection::TypeInfo* typeInfo)
-    {
-        if (typeInfo == nullptr)
-        {
-            LOGERROR() << "The typeinfo is invalid";
-            return;
-        }
+	void Print(const Reflection::TypeInfo* typeInfo)
+	{
+		if (typeInfo == nullptr)
+		{
+			LOGERROR() << "The typeinfo is invalid";
+			return;
+		}
 
-        if (typeInfo->GetSuperType() == nullptr)
-        {
-            LOGINFO() << "Type : " << typeInfo->GetTypeName()
-                        << " / Super : none";
-        }
-        else
-        {
-            LOGINFO() << "Type : " << typeInfo->GetTypeName()
-                        << " / Super : " << typeInfo->GetSuperType()->GetTypeName();
-        }
+		if (typeInfo->GetSuperType() == nullptr)
+		{
+			LOGINFO() << "Type : " << typeInfo->GetTypeName()
+						<< " / Super : none";
+		}
+		else
+		{
+			LOGINFO() << "Type : " << typeInfo->GetTypeName()
+						<< " / Super : " << typeInfo->GetSuperType()->GetTypeName();
+		}
 
-        for (const auto& propertyPair : typeInfo->GetProperties())
-        {
-            Print(propertyPair.second);
-        }
+		for (const auto& propertyPair : typeInfo->GetProperties())
+		{
+			Print(propertyPair.second);
+		}
 
-        for (const auto& methodPair : typeInfo->GetMethods())
-        {
-            Print(methodPair.second);
-        }
-    }
+		for (const auto& methodPair : typeInfo->GetMethods())
+		{
+			Print(methodPair.second);
+		}
+	}
 
-    void ChangeInstanceProperty()
-    {
-        IObject instance;
+	void ChangeInstanceProperty()
+	{
+		IObject instance;
 
-        const Reflection::PropertyInfo* propertyInfo = IObject::GetStaticTypeInfo()->GetProperty("m_Value");
-        if (propertyInfo != nullptr)
-        {
-            int* value = propertyInfo->Get<int>(instance);
-            if (value != nullptr)
-            {
-                LOGINFO() << "IObject Value : " << *value;
-            }
+		const Reflection::PropertyInfo* propertyInfo = IObject::GetStaticTypeInfo()->GetProperty("m_Value");
+		if (propertyInfo != nullptr)
+		{
+			int* value = propertyInfo->Get<int>(instance);
+			if (value != nullptr)
+			{
+				LOGINFO() << "IObject Value : " << *value;
+			}
 
-            propertyInfo->Set(instance, 2);
+			propertyInfo->Set(instance, 2);
 
-            LOGINFO() << "IObject Changed Value : " << instance.m_Value;
-        }
-    }
+			LOGINFO() << "IObject Changed Value : " << instance.m_Value;
+		}
+	}
 
-    void ChangeConstantInstanceProperty()
-    {
-        const IObject constInstance;
+	void ChangeConstantInstanceProperty()
+	{
+		const IObject constInstance;
 
-        const Reflection::PropertyInfo* propertyInfo = IObject::GetStaticTypeInfo()->GetProperty("m_Value");
-        if (propertyInfo != nullptr)
-        {
-            const int* value = propertyInfo->Get<int>(constInstance);
-            if (value != nullptr)
-            {
-                LOGINFO() << "const IObject Value : " << *value;
-            }
-        }
-    }
+		const Reflection::PropertyInfo* propertyInfo = IObject::GetStaticTypeInfo()->GetProperty("m_Value");
+		if (propertyInfo != nullptr)
+		{
+			const int* value = propertyInfo->Get<int>(constInstance);
+			if (value != nullptr)
+			{
+				LOGINFO() << "const IObject Value : " << *value;
+			}
+		}
+	}
 
-    void ChangePointerProperty()
-    {
-        ObjectHolder holder;
+	void ChangePointerProperty()
+	{
+		ObjectHolder holder;
 
-        const Reflection::PropertyInfo* propertyInfo = ObjectHolder::GetStaticTypeInfo()->GetProperty("m_MyObject");
-        if (propertyInfo != nullptr)
-        {
-            ObjectB* value = propertyInfo->Get<ObjectB*>(holder);
-            if (value != nullptr)
-            {
-                LOGINFO() << "ObjectHolder ObjectB Value : " << value->m_Value;
-            }
+		const Reflection::PropertyInfo* propertyInfo = ObjectHolder::GetStaticTypeInfo()->GetProperty("m_MyObject");
+		if (propertyInfo != nullptr)
+		{
+			LOGINFO() << "ObjectHolder change value(nullptr) to the Object B*";
+			ObjectB objectB;
+			propertyInfo->Set(holder, &objectB);
+			holder.m_MyObject->Hello(456);
 
-            ObjectB newValue;
-            newValue.m_Value = 150;
+			LOGINFO() << "ObjectHolder change value(ObjectB*) to the Object A*";
+			ObjectA objectA;
+			propertyInfo->Set(holder, &objectA);
+			holder.m_MyObject->Hello(234);
 
-            propertyInfo->Set(holder, &newValue);
+			LOGINFO() << "ObjectHolder get value(ObjectA*) as the IObject*";
+			ObjectA* pointerA = propertyInfo->Get<ObjectA*>(holder);
+			if (pointerA != nullptr)
+			{
+				pointerA->Hello(123);
+			}
+		}
+	}
 
-            LOGINFO() << "ObjectHolder Changed Value : " << holder.m_MyObject->m_Value;
+	void GetPropertyVirtualFunction()
+	{
+		ObjectHolder holder;
 
-            propertyInfo->Set(holder, value);
-        }
-    }
+		const Reflection::PropertyInfo* propertyInfo = ObjectHolder::GetStaticTypeInfo()->GetProperty("m_MyObject");
+		if (propertyInfo != nullptr)
+		{
+			ObjectA* parentType = propertyInfo->Get<ObjectA*>(holder);
+			if (parentType != nullptr)
+			{
+				LOGINFO() << "ObjectHolder Get ObjectA Value : " << parentType->m_Value;
+				parentType->Hello(123);
+			}
 
-    void Print()
-    {
-        LOGINFO() << "[ Print Type Info ]";
+			ObjectB* childType = propertyInfo->Get<ObjectB*>(holder);
+			if (childType != nullptr)
+			{
+				LOGINFO() << "ObjectHolder Get ObjectB Value : " << childType->m_Value;
+				childType->Hello(123);
+			}
+		}
+	}
 
-        for (const auto& typePair : Reflection::TypeManager::GetHandle().GetTypeMap())
-        {
-            Print(typePair.second);
-        }
+	void Print()
+	{
+		LOGINFO() << "[ Print Type Info ]";
 
-        LOGINFO() << " ";
-    }
+		for (const auto& typePair : Reflection::TypeManager::GetHandle().GetTypeMap())
+		{
+			Print(typePair.second);
+		}
 
-    void Property()
-    {
-        LOGINFO() << "[ Test Property ]";
-        
-        ChangeInstanceProperty();
-        ChangeConstantInstanceProperty();
-        ChangePointerProperty();
+		LOGINFO() << " ";
+	}
 
-        LOGINFO() << " ";
-    }
+	void Property()
+	{
+		LOGINFO() << "[ Test Property ]";
+		
+		ChangeInstanceProperty();
+		ChangeConstantInstanceProperty();
+		ChangePointerProperty();
+		GetPropertyVirtualFunction();
 
-    void Cast()
-    {
-        LOGINFO() << "[ Test Type Casting ]";
+		LOGINFO() << " ";
+	}
 
-        IObject* objectA = new ObjectA;
-        IObject* objectB = new ObjectB;
+	void Cast()
+	{
+		LOGINFO() << "[ Test Type Casting ]";
 
-        ObjectB* wrongB = Reflection::Cast<ObjectB*>(objectA);
-        if (nullptr == wrongB)
-        {
-            LOGINFO() << "Failed to cast the ObjectA(ObjectA) to ObjectB";
-        }
+		IObject* objectA = new ObjectA;
+		IObject* objectB = new ObjectB;
 
-        ObjectB* castB = Reflection::Cast<ObjectB*>(objectB);
-        if (nullptr != castB)
-        {
-            LOGINFO() << "Succeed to cast the IObject(ObjectB) to the ObjectB : " << castB->m_Value;
-        }
+		ObjectB* wrongB = Reflection::Cast<ObjectB*>(objectA);
+		if (nullptr == wrongB)
+		{
+			LOGINFO() << "Failed to cast the ObjectA(ObjectA) to ObjectB";
+		}
 
-        ObjectA* castA = Reflection::Cast<ObjectA*>(objectB);
-        if (nullptr != castA)
-        {
-            LOGINFO() << "Succeed to cast the ObjectB(ObjectB) to the ObjectA : " << castA->m_Value;
-        }
+		ObjectB* castB = Reflection::Cast<ObjectB*>(objectB);
+		if (nullptr != castB)
+		{
+			LOGINFO() << "Succeed to cast the IObject(ObjectB) to the ObjectB : " << castB->m_Value;
+		}
 
-        LOGINFO() << " ";
-    }
+		ObjectA* castA = Reflection::Cast<ObjectA*>(objectB);
+		if (nullptr != castA)
+		{
+			LOGINFO() << "Succeed to cast the ObjectB(ObjectB) to the ObjectA : " << castA->m_Value;
+		}
 
-    void Invoke()
-    {
-        LOGINFO() << "[ Test Method Invoke ]";
+		LOGINFO() << " ";
+	}
 
-        ObjectB value;
+	void Invoke()
+	{
+		LOGINFO() << "[ Test Method Invoke ]";
 
-        const Reflection::TypeInfo* typeInfo = value.GetTypeInfo();
-        if (nullptr == typeInfo)
-        {
-            return;
-        }
+		ObjectB value;
 
-        const Reflection::MethodInfo* hello = typeInfo->GetMethod("Hello");
-        const Reflection::MethodInfo* constHello = typeInfo->GetMethod("ConstHello");
-        const Reflection::MethodInfo* staticHello = typeInfo->GetMethod("StaticHello");
+		const Reflection::TypeInfo* typeInfo = value.GetTypeInfo();
+		if (nullptr == typeInfo)
+		{
+			return;
+		}
 
-        if (nullptr != hello)
-        {
-            hello->Invoke<void>(value, 10);
-        }
+		const Reflection::MethodInfo* hello = typeInfo->GetMethod("Hello");
+		const Reflection::MethodInfo* constHello = typeInfo->GetMethod("ConstHello");
+		const Reflection::MethodInfo* staticHello = typeInfo->GetMethod("StaticHello");
 
-        if (nullptr != constHello)
-        {
-            constHello->Invoke<void>(value, 10, 0.5f);
-        }
+		if (nullptr != hello)
+		{
+			hello->Invoke<void>(value, 10);
+		}
 
-        if (nullptr != staticHello)
-        {
-            staticHello->Invoke<void>(value, 0.5f);
-        }
+		if (nullptr != constHello)
+		{
+			constHello->Invoke<void>(value, 10, 0.5f);
+		}
 
-        LOGINFO() << " ";
-    }
+		if (nullptr != staticHello)
+		{
+			staticHello->Invoke<void>(value, 0.5f);
+		}
+
+		LOGINFO() << " ";
+	}
 };
 
 int MAIN()
 {
-    Log::Init(1024, Log::Enum::eMode_Print, Log::Enum::eLevel_Time | Log::Enum::eLevel_Type);
-    LOGINFO() << "|| Reflection Test ||";
-    LOGINFO() << " ";
+	Log::Init(1024, Log::Enum::eMode_Print, Log::Enum::eLevel_Time | Log::Enum::eLevel_Type);
+	LOGINFO() << "|| Reflection Test ||";
+	LOGINFO() << " ";
 
-    Test::Print();
-    Test::Cast();
-    Test::Property();
-    Test::Invoke();
+	Test::Print();
+	Test::Cast();
+	Test::Property();
+	Test::Invoke();
 
-    system("pause");
+	system("pause");
 
-    return 0;
+	return 0;
 }

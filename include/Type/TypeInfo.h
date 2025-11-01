@@ -58,12 +58,22 @@ namespace Reflection
 				, m_typeName(initializer.typeName)
 				, m_properties()
 				, m_methods()
-			{}
+			{
+				if constexpr (Utils::IsPointer<T>::value || Utils::IsReference<T>::value || Utils::IsConst<T>::value)
+				{
+					m_pureType = TypeManager::GetHandle().GetTypeInfo<Utils::PureType_t<T>>();
+				}
+				else
+				{
+					m_pureType = this;
+				}
+			}
 
 			bool operator==(const TypeInfo& other) const;
 
 		public :
 			const TypeInfo* GetSuperType() const;
+			const TypeInfo* GetPureType() const;
 			const size_t GetTypeHash() const;
 			const std::string& GetTypeName() const;
 
@@ -78,6 +88,7 @@ namespace Reflection
 
 		private :
 			const TypeInfo*		m_superType;
+			const TypeInfo*		m_pureType;
 			const size_t		m_typeHash;
 			const std::string	m_typeName;
 
