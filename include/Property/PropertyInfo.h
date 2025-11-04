@@ -56,44 +56,54 @@ namespace Reflection
 			template<typename T, typename U>
 			void Set(U& instance, const T& value) const
 			{
-				const TypeInfo* otherType = TypeManager::GetHandle().GetTypeInfo<T>();
-				if (!IsSame(m_propertyType, otherType))
-				{
-					return;
-				}
-
+				const TypeInfo* inputType = TypeManager::GetHandle().GetTypeInfo<T>();
 				char* base = reinterpret_cast<char*>(&instance);
 				char* address = base + m_propertyOffset;
-
-				T& property = *reinterpret_cast<T*>(address);
-				property = value;
+				
+				if constexpr (Utils::IsPointer<T>::value)
+				{
+					if (IsSame(m_propertyType, inputType) || IsChild(m_propertyType->GetPureType(), inputType->GetPureType()))
+					{
+						char** pointer = reinterpret_cast<char**>(address);
+						*pointer = reinterpret_cast<char*>(value);
+					}
+				}
+				else
+				{
+					if (IsSame(m_propertyType, inputType))
+					{
+						T& property = *reinterpret_cast<T*>(address);
+						property = value;
+					}
+				}
 			}
 
 		private :
 			template<typename T, typename U>
 			const Utils::RemovePointer_t<T>* GetImpl(const U& instance) const
 			{
-				const TypeInfo* otherType = TypeManager::GetHandle().GetTypeInfo<T>();
-				if (!IsSame(m_propertyType, otherType))
-				{
-					return nullptr;
-				}
-
+				const TypeInfo* outputType = TypeManager::GetHandle().GetTypeInfo<T>();
 				const char* base = reinterpret_cast<const char*>(&instance);
 				const char* address = base + m_propertyOffset;
 
 				if constexpr (Utils::IsPointer<T>::value)
 				{
-					const T pointer = *reinterpret_cast<const T*>(address);
-
-					return pointer;
+					if (IsSame(m_propertyType, outputType) || IsChild(outputType->GetPureType(), m_propertyType->GetPureType()))
+					{
+						const T pointer = *reinterpret_cast<const T*>(address);
+						return pointer;
+					}
 				}
 				else
 				{
-					const T& instance = *reinterpret_cast<const T*>(address);
-
-					return &instance;
+					if (IsSame(m_propertyType, outputType))
+					{
+						const T& property = *reinterpret_cast<const T*>(address);
+						return &property;
+					}
 				}
+
+				return nullptr;
 			}
 
 		public :

@@ -131,6 +131,9 @@ namespace Reflection
 		using RemoveConst_t = typename RemoveConst<T>::Type;
 
 		template<typename T>
+		using PureType_t = RemovePointer_t<RemoveReference_t<RemoveConst_t<T>>>;
+
+		template<typename T>
 		struct IsPointer
 		{
 			static constexpr bool value = !IsSame<T, RemovePointer<T>::Type>::value;
@@ -146,36 +149,6 @@ namespace Reflection
 		struct IsConst
 		{
 			static constexpr bool value = !IsSame<T, RemoveConst<T>::Type>::value;
-		};
-
-		template<typename Return, typename Class, typename... Args>
-		struct IsConst<Return(Class::*)(Args...)>
-		{
-			static constexpr bool value = false;
-		};
-
-		template<typename Return, typename Class, typename... Args>
-		struct IsConst<Return(Class::*)(Args...) const>
-		{
-			static constexpr bool value = true;
-		};
-
-		template<typename Return, typename... Args>
-		struct IsConst<Return(*)(Args...)>
-		{
-			static constexpr bool value = false;
-		};
-
-		template<typename Return, typename... Args>
-		struct IsMemberFunc
-		{
-			static constexpr bool value = true;
-		};
-
-		template<typename Return, typename... Args>
-		struct IsMemberFunc<Return(*)(Args...)>
-		{
-			static constexpr bool value = false;
 		};
 
 		template<bool Condition, typename T, typename U>
