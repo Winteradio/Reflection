@@ -8,9 +8,19 @@
 
 namespace Reflection
 {
+	/**
+	 * @class	MethodInfo
+	 * @brief	Class that holds information about a method in the reflection system.
+	 * 			Provides functionality to invoke the method and access its metadata.
+	 */
 	class MethodInfo
 	{
 		public :
+			/**
+			 * @brief	Template struct for initializing MethodInfo instances.
+			 * @tparam	Type   The owner type of the method.
+			 * @tparam	Method The method type.
+			 */
 			template<typename Type, typename Method>
 			struct Initializer
 			{
@@ -26,6 +36,13 @@ namespace Reflection
 			};
 
 		public :
+			/**
+			 * @brief	Constructor for MethodInfo.
+			 * @tparam	Type   The owner type of the method.
+			 * @tparam	Method The method type.
+			 * @param	initializer The initializer containing method metadata.
+			 * @param	methodName  The name of the method.
+			 */
 			template<typename Type, typename Method>
 			explicit MethodInfo(const Initializer<Type, Method>& initializer, const std::string& methodName)
 				: m_ownerType(initializer.ownerType)
@@ -42,6 +59,15 @@ namespace Reflection
 			bool operator==(const MethodInfo& other) const;
 
 		public :
+			/**
+			 * @brief	Invoke the method on the given instance with the provided arguments.
+			 * @tparam	Return The return type of the method.
+			 * @tparam	Class  The class type of the method.
+			 * @tparam	Args   The argument types of the method.
+			 * @param	instance A reference to the instance on which to invoke the method.
+			 * @param	args     The arguments to pass to the method.
+			 * @return	Return The result of the method invocation.
+			 */
 			template<typename Return, typename Class, typename... Args>
 			Return Invoke(Class& instance, Args... args) const
 			{

@@ -12,16 +12,39 @@ namespace Reflection
 	class PropertyInfo;
 	class MethodInfo;
 
+	/**
+	 * @class	TypeInfo
+	 * @brief	Class that holds type information in the reflection system.
+	 * 			Provides functionality to access type metadata, properties, and methods.
+	 */
 	class TypeInfo
 	{
 		public :
+			/**
+			 * @brief	Template struct for initializing TypeInfo instances.
+			 * @tparam	T The type for which to create TypeInfo.
+			 */
 			using PropertyMap = std::unordered_map<std::string, const PropertyInfo*>;
+
+			/**
+			 * @brief	Template struct for initializing TypeInfo instances.
+			 * @tparam	T The type for which to create TypeInfo.
+			 */
 			using MethodMap = std::unordered_map<std::string, const MethodInfo*>;
 
 		public:
+			/**
+			 * @brief	Template type to validate if T has a SuperType defined.
+			 * @tparam	T The type to check for SuperType.
+			 */
 			template<typename T>
 			using ValidSuper = typename Utils::IsEnabled<!Utils::IsSame<typename T::SuperType, void>::value>::Type;
 
+			/**
+			 * @brief	Template struct for initializing TypeInfo instances.
+			 * @tparam	T The type for which to create TypeInfo.
+			 * @tparam	U An optional parameter to detect SuperType.
+			 */
 			template<typename T, typename U = void>
 			struct Initializer
 			{
@@ -36,6 +59,10 @@ namespace Reflection
 				{}
 			};
 
+			/**
+			 * @brief	Template struct specialization for types with a SuperType defined.
+			 * @tparam	T The type for which to create TypeInfo.
+			 */
 			template<typename T>
 			struct Initializer<T, ValidSuper<T>>
 			{
@@ -51,6 +78,11 @@ namespace Reflection
 			};
 
 		public :
+			/**
+			 * @brief	Constructor for TypeInfo.
+			 * @tparam	T The type for which to create TypeInfo.
+			 * @param	initializer The initializer containing type metadata.
+			 */
 			template<typename T>
 			explicit TypeInfo(const Initializer<T>& initializer)
 				: m_superType(initializer.superType)
