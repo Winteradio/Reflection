@@ -94,11 +94,11 @@ namespace Reflection
 		const TypeInfo* outputType = TypeManager::GetHandle().GetTypeInfo<TType>();
 		
 		// Get the TypeInfo of the actual instance that the pointer is pointing to.
-		const TypeInfo* intputType = pointer->GetTypeInfo();
+		const TypeInfo* inputType = pointer->GetTypeInfo();
 
 		// Check if the actual instance type (inputType) is the same as the target type (outputType)
     	// OR if the actual instance type is a child of the target type (safe downcasting).
-		if (IsSame(outputType, intputType) || IsChild(outputType, intputType))
+		if (IsSame(outputType, inputType) || IsChild(outputType, inputType))
 		{
 			return static_cast<T>(pointer);
 		}

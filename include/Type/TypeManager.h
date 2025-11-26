@@ -7,6 +7,11 @@
 
 namespace Reflection
 {
+	/**
+	 * @class	TypeManager
+	 * @brief	Singleton class that manages type registrations and retrievals in the reflection system.
+	 * 			Provides functionality to register types and access their TypeInfo instances.
+	 */
 	class TypeManager
 	{
 		private : 
@@ -21,6 +26,11 @@ namespace Reflection
 			const TypeMap& GetTypeMap() const;
 
 		public:
+			/**
+			 * @brief	Registers a type T and returns its TypeInfo instance.
+			 * @tparam	T The type to register.
+			 * @return	TypeInfo* A pointer to the registered TypeInfo instance.
+			 */
 			template<typename T>
 			TypeInfo* Register()
 			{
@@ -32,6 +42,11 @@ namespace Reflection
 				return &typeInfo;
 			}
 
+			/**
+			 * @brief	Retrieves the TypeInfo instance for a registered type T.
+			 * @tparam	T The type whose TypeInfo is to be retrieved.
+			 * @return	const TypeInfo* A pointer to the TypeInfo instance of type T.
+			 */
 			template<typename T>
 			const TypeInfo* GetTypeInfo()
 			{
