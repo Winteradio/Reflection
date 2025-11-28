@@ -152,6 +152,14 @@ namespace Reflection
 				return reinterpret_cast<void*>(address);
 			}
 
+			const void* GetRaw(const void* instance) const
+			{
+				const char* base = reinterpret_cast<const char*>(instance);
+				const char* address = base + m_propertyOffset;
+
+				return reinterpret_cast<const void*>(address);
+			}
+
 			/**
 			 * @brief	Sets the property value on the given instance using raw pointers.
 			 * @details	[Unsafe API] This method directly invokes the internal Assigner thunk.
