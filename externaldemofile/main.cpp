@@ -294,6 +294,16 @@ namespace Test
 			LOGINFO() << "Succeed to cast the ObjectB(ObjectB) to the ObjectA : " << castA->m_Value;
 		}
 
+		/**
+		 * Compile Error
+		int value = 100;
+		IObject* castInt = Reflection::Cast<IObject*>(&value);
+		if (nullptr == castInt)
+		{
+			LOGINFO() << "Failed to cast the int(100) to IObject*";
+		}
+		*/
+
 		LOGINFO() << " ";
 	}
 
