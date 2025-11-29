@@ -60,9 +60,9 @@ include(${CMAKE_SOURCE_DIR}/external/CMake/Project.cmake)
 project_options()
 
 # ------ Create the Demofile ------ #
-option(BUILD_DEMO_FILE "Build the demo file" ON)
+option(REFLECTION_DEMO_FILE "Build the demo file" ON)
 
-if (BUILD_DEMO_FILE)
+if (REFLECTION_DEMO_FILE)
     message(STATUS "# Create the demofile project")
 
     set(DEMOFILE_DIR ${MAIN_DIR}/demofile)
