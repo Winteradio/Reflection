@@ -26,6 +26,16 @@ namespace Reflection
 		}
 	}
 
+	const std::string& PropertyInfo::GetPropertyName() const
+	{
+		return m_propertyName;
+	}
+
+	size_t PropertyInfo::GetPropertyOffset() const
+	{
+		return m_propertyOffset;
+	}
+
 	const TypeInfo* PropertyInfo::GetOwnerType() const
 	{
 		return m_ownerType;
@@ -34,15 +44,5 @@ namespace Reflection
 	const TypeInfo* PropertyInfo::GetPropertyType() const
 	{
 		return m_propertyType;
-	}
-
-	const size_t PropertyInfo::GetPropertyOffset() const
-	{
-		return m_propertyOffset;
-	}
-
-	const std::string& PropertyInfo::GetPropertyName() const
-	{
-		return m_propertyName;
 	}
 }

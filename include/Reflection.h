@@ -5,5 +5,6 @@
 #include "Property/PropertyMacro.h"
 #include "Type/TypeMacro.h"
 #include "Type/TypeCast.h"
+#include "Type/TypeManager.h"
 
 #endif // __REFLECTION_H__

@@ -2,7 +2,7 @@
 message(STATUS "# Set the basic options for the demo project")
 
 cmake_minimum_required(VERSION 3.20)
-project(Demofile LANGUAGES CXX)
+project(Demo LANGUAGES CXX)
 
 # ------ Create the executable program ------ #
 if (WIN32)
@@ -14,32 +14,27 @@ else ()
 endif()
 
 # ------ Set the project options ------ #
-include(${CMAKE_CURRENT_SOURCE_DIR}/../cmake/Project.cmake)
+include(${CMAKE_SOURCE_DIR}/external/CMake/Project.cmake)
 project_options()
 
-# ------ Load the extenral project ------ #
-include(${CMAKE_CURRENT_SOURCE_DIR}/../cmake/ExternalProject.cmake)
+# ------ Add the sub modules ------ #
+message(STATUS "- Demo : Add the Log project")
 
-# ------ Load the log project ------ #
-add_external_library(
-	PROJECT_NAME LogProject_Demo
-	LIBRARY_NAME LogProject
-	GIT_REPOSITORY https://github.com/Winteradio/Log.git
-	BUILD_SHARED_LIBS ON
-)
+set(LOG_DEMO_FILE OFF)
+add_subdirectory(${CMAKE_SOURCE_DIR}/external/Log build)
 
 # ------ Set the properties the executable program ------ #
 set(MAIN_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 
 set(HEADER_LIST 
 	${MAIN_DIR}/../include
+	${MAIN_DIR}/../external
 )
 
 target_sources(${PROJECT_NAME} PRIVATE
 	${MAIN_DIR}/main.cpp
 )
 
-message(STATUS "${HEADER_LIST}")
-
 target_include_directories(${PROJECT_NAME} PUBLIC ${HEADER_LIST})
-target_link_libraries(${PROJECT_NAME} PUBLIC ReflectionProject)
+target_link_libraries(${PROJECT_NAME} PUBLIC ReflectionProject LogProject)
+set_target_properties(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})

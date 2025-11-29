@@ -239,7 +239,7 @@ namespace Reflection
 		template<typename T>
 		struct IsPointer
 		{
-			static constexpr bool value = !IsSame<T, RemovePointer<T>::Type>::value;
+			static constexpr bool value = !IsSame<T, RemovePointer_t<T>>::value;
 		};
 
 		/**
@@ -249,7 +249,7 @@ namespace Reflection
 		template<typename T>
 		struct IsReference
 		{
-			static constexpr bool value = !IsSame<T, RemoveReference<T>::Type>::value;
+			static constexpr bool value = !IsSame<T, RemoveReference_t<T>>::value;
 		};
 
 		/**
@@ -259,7 +259,7 @@ namespace Reflection
 		template<typename T>
 		struct IsConst
 		{
-			static constexpr bool value = !IsSame<T, RemoveConst<T>::Type>::value;
+			static constexpr bool value = !IsSame<T, RemoveConst_t<T>>::value;
 		};
 
 		/**

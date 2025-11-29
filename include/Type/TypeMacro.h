@@ -1,7 +1,7 @@
 #ifndef __REFLECTION_TYPEMACRO_H__
 #define __REFLECTION_TYPEMACRO_H__
 
-#include "Type/TypeManager.h"
+#include "Type/TypeInfo.h"
 
 /**
  * @def		GENERATE( Class )
@@ -26,7 +26,7 @@
 \
 		static const Reflection::TypeInfo* GetStaticTypeInfo() \
 		{ \
-			static const Reflection::TypeInfo* typeInfo = Reflection::TypeManager::GetHandle().GetTypeInfo<Class>(); \
+			static const Reflection::TypeInfo* typeInfo = Reflection::TypeInfo::Get<Class>(); \
 			return typeInfo; \
 		} \
 \

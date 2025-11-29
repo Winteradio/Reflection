@@ -24,13 +24,13 @@ namespace Reflection
 			template<typename Type, typename Method>
 			struct Initializer
 			{
-				TypeInfo* ownerType;
-				TypeInfo* methodType;
+				const TypeInfo* ownerType;
+				const TypeInfo* methodType;
 				const MethodBase* methodBase;
 
 				Initializer(const MethodBase* method)
-					: ownerType(TypeManager::GetHandle().Register<Type>())
-					, methodType(TypeManager::GetHandle().Register<Method>())
+					: ownerType(TypeInfo::Get<Type>())
+					, methodType(TypeInfo::Get<Method>())
 					, methodBase(method)
 				{}
 			};
@@ -50,9 +50,10 @@ namespace Reflection
 				, m_methodBase(initializer.methodBase)
 				, m_methodName(methodName)
 			{
-				if (nullptr != initializer.ownerType)
+				TypeInfo* ownerType = const_cast<TypeInfo*>(m_ownerType);
+				if (nullptr != ownerType)
 				{
-					initializer.ownerType->AddMethod(this);
+					ownerType->AddMethod(this);
 				}
 			}
 

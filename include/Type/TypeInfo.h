@@ -79,53 +79,94 @@ namespace Reflection
 
 		public :
 			/**
+			 * @brief	Retrieves the TypeInfo instance for a given type T (Self-Registration API).
+			 * @details	This function implements the **Self-Registration Pattern** by defining 
+			 * 			a static TypeInfo object internally. 
+			 * 			The constructor of this static object ensures the type is registered with 
+			 * 			the TypeManager at static initialization time (Lazy Initialization).
+			 * 			The function guarantees **runtime immutability** by always returning 
+			 * 			a constant pointer (`const TypeInfo*`) to the single, static instance.
+			 * @tparam	T The type for which to retrieve the TypeInfo.
+			 * @return	const TypeInfo* A pointer to the unique, read-only TypeInfo instance.
+			 */
+			template<typename T>
+			static const TypeInfo* Get()
+			{
+				static TypeInfo::Initializer<T> initializer;
+				static TypeInfo typeInfo(initializer);
+
+				return &typeInfo;
+			}
+
+		public :
+			/**
 			 * @brief	Constructor for TypeInfo.
 			 * @tparam	T The type for which to create TypeInfo.
 			 * @param	initializer The initializer containing type metadata.
 			 */
 			template<typename T>
 			explicit TypeInfo(const Initializer<T>& initializer)
-				: m_superType(initializer.superType)
-				, m_typeHash(initializer.typeHash)
-				, m_typeName(initializer.typeName)
-				, m_properties()
+				: m_properties()
 				, m_methods()
+				, m_typeName(initializer.typeName)
+				, m_typeHash(initializer.typeHash)
+				, m_superType(initializer.superType)
+				, m_pureType(this)
 			{
 				if constexpr (Utils::IsPointer<T>::value || Utils::IsReference<T>::value || Utils::IsConst<T>::value)
 				{
-					m_pureType = TypeManager::GetHandle().GetTypeInfo<Utils::PureType_t<T>>();
+					m_pureType = TypeInfo::Get<Utils::PureType_t<T>>();
 				}
-				else
-				{
-					m_pureType = this;
-				}
+
+				Regist();
 			}
 
 			bool operator==(const TypeInfo& other) const;
 
 		public :
-			const TypeInfo* GetSuperType() const;
-			const TypeInfo* GetPureType() const;
-			const size_t GetTypeHash() const;
-			const std::string& GetTypeName() const;
-
-			void AddProperty(const PropertyInfo* property);
-			void AddMethod(const MethodInfo* method);
+			const PropertyMap& GetProperties() const;
+			const MethodMap& GetMethods() const;
 
 			const PropertyInfo* GetProperty(const std::string& name) const;
 			const MethodInfo* GetMethod(const std::string& name) const;
 
-			const PropertyMap& GetProperties() const;
-			const MethodMap& GetMethods() const;
+			/**
+			 * @brief	[Internal Use Only] Registers a property into this TypeInfo instance.
+			 * @details This function is designed to be called **only during the static initialization phase** * 
+			 * 			(via the owner's PropertyInfo constructor), 
+			 * 			where the TypeInfo object is temporarily mutable for setup. 
+			 * 			**Note: It does not check for constness.**
+			 * @param	property The property information pointer.
+			 */
+			void AddProperty(const PropertyInfo* property);
+
+			/**
+			 * @brief	[Internal Use Only] Registers a method into this TypeInfo instance.
+			 * @details Similar to AddProperty, this is called **only during the static initialization phase**. 
+			 * @param	method The method information pointer.
+			 */
+			void AddMethod(const MethodInfo* method);
+
+			const std::string& GetTypeName() const;
+			size_t GetTypeHash() const;
+			const TypeInfo* GetSuperType() const;
+			const TypeInfo* GetPureType() const;
+
+		private:
+			/**
+			 * @brief	Registers the TypeInfo instance with the global TypeManager.
+			 * @details This is called by the TypeInfo constructor during static initialization.
+			 */
+			void Regist();
 
 		private :
-			const TypeInfo*		m_superType;
-			const TypeInfo*		m_pureType;
-			const size_t		m_typeHash;
-			const std::string	m_typeName;
-
 			PropertyMap			m_properties;
 			MethodMap			m_methods;
+
+			const std::string	m_typeName;
+			const size_t		m_typeHash;
+			const TypeInfo*		m_superType;
+			const TypeInfo*		m_pureType;
 	};
 };
 

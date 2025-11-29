@@ -3,6 +3,8 @@
 #include "Property/PropertyInfo.h"
 #include "Method/MethodInfo.h"
 
+#include "Type/TypeManager.h"
+
 namespace Reflection
 {
 	bool TypeInfo::operator==(const TypeInfo& other) const
@@ -16,45 +18,15 @@ namespace Reflection
 			return true;
 		}
 	}
-	
-	const TypeInfo* TypeInfo::GetSuperType() const
+
+	const TypeInfo::PropertyMap& TypeInfo::GetProperties() const
 	{
-		return m_superType;
+		return m_properties;
 	}
 
-	const TypeInfo* TypeInfo::GetPureType() const
+	const TypeInfo::MethodMap& TypeInfo::GetMethods() const
 	{
-		return m_pureType;
-	}
-
-	const size_t TypeInfo::GetTypeHash() const
-	{
-		return m_typeHash;
-	}
-
-	const std::string& TypeInfo::GetTypeName() const
-	{
-		return m_typeName;
-	}
-
-	void TypeInfo::AddProperty(const PropertyInfo* property)
-	{
-		if (nullptr == property)
-		{
-			return;
-		}
-
-		m_properties[property->GetPropertyName()] = property;
-	}
-
-	void TypeInfo::AddMethod(const MethodInfo* method)
-	{
-		if (nullptr == method)
-		{
-			return;
-		}
-
-		m_methods[method->GetMethodName()] = method;
+		return m_methods;
 	}
 
 	const PropertyInfo* TypeInfo::GetProperty(const std::string& name) const
@@ -79,13 +51,48 @@ namespace Reflection
 		return nullptr;
 	}
 
-	const TypeInfo::PropertyMap& TypeInfo::GetProperties() const
+	void TypeInfo::AddProperty(const PropertyInfo* property)
 	{
-		return m_properties;
+		if (nullptr == property)
+		{
+			return;
+		}
+
+		m_properties[property->GetPropertyName()] = property;
 	}
 
-	const TypeInfo::MethodMap& TypeInfo::GetMethods() const
+	void TypeInfo::AddMethod(const MethodInfo* method)
 	{
-		return m_methods;
+		if (nullptr == method)
+		{
+			return;
+		}
+
+		m_methods[method->GetMethodName()] = method;
+	}
+
+	const std::string& TypeInfo::GetTypeName() const
+	{
+		return m_typeName;
+	}
+
+	size_t TypeInfo::GetTypeHash() const
+	{
+		return m_typeHash;
+	}
+
+	const TypeInfo* TypeInfo::GetSuperType() const
+	{
+		return m_superType;
+	}
+
+	const TypeInfo* TypeInfo::GetPureType() const
+	{
+		return m_pureType;
+	}
+
+	void TypeInfo::Regist()
+	{
+		TypeManager::GetHandle().Regist(this);
 	}
 }
