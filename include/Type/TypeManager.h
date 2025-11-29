@@ -2,11 +2,12 @@
 #define __REFLECTION_TYPEMANAGER_H__
 
 #include <unordered_map>
-
-#include "Type/TypeInfo.h"
+#include <mutex>
 
 namespace Reflection
 {
+	class TypeInfo;
+
 	/**
 	 * @class	TypeManager
 	 * @brief	Singleton class that manages type registrations and retrievals in the reflection system.
@@ -23,51 +24,22 @@ namespace Reflection
 		public :
 			static TypeManager& GetHandle();
 
-			const TypeMap& GetTypeMap() const;
-
 		public:
 			/**
-			 * @brief	Registers a type T and returns its TypeInfo instance.
-			 * @tparam	T The type to register.
-			 * @return	TypeInfo* A pointer to the registered TypeInfo instance.
+			 * @brief	Regist some type info.
+			 * @param	The type info's pointer
 			 */
-			template<typename T>
-			TypeInfo* Register()
-			{
-				static TypeInfo::Initializer<T> initializer;
-				static TypeInfo typeInfo(initializer);
-
-				m_typeMap[typeInfo.GetTypeHash()] = &typeInfo;
-
-				return &typeInfo;
-			}
+			void Regist(const TypeInfo* typeInfo);
 
 			/**
-			 * @brief	Retrieves the TypeInfo instance for a registered type T.
-			 * @tparam	T The type whose TypeInfo is to be retrieved.
-			 * @return	const TypeInfo* A pointer to the TypeInfo instance of type T.
+			 * @brief	Get the type info's that registed this instance.
+			 * @return	The type info's map
 			 */
-			template<typename T>
-			const TypeInfo* GetTypeInfo()
-			{
-				const size_t typeHash = typeid(T).hash_code();
-
-				auto itr = m_typeMap.find(typeHash);
-				if (itr != m_typeMap.end())
-				{
-					return itr->second;
-				}
-				else
-				{
-					return Register<T>();
-				}
-			}
-
-		private:
-			const std::string GetTypeName(const char* name);
+			const TypeMap& GetTypeMap() const;
 
 		private :
 			TypeMap m_typeMap;
+			std::mutex m_mutex;
 	};
 };
 

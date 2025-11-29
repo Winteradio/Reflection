@@ -1,5 +1,7 @@
 #include "Type/TypeManager.h"
 
+#include "Type/TypeInfo.h"
+
 namespace Reflection
 {
 	TypeManager::TypeManager()
@@ -15,6 +17,18 @@ namespace Reflection
 	{
 		static TypeManager typeManager;
 		return typeManager;
+	}
+
+	void TypeManager::Regist(const TypeInfo* typeInfo)
+	{
+		if (nullptr == typeInfo)
+		{
+			return;
+		}
+
+		std::lock_guard<std::mutex> lock(m_mutex);
+		
+		m_typeMap.insert({typeInfo->GetTypeHash(), typeInfo});
 	}
 
 	const TypeManager::TypeMap& TypeManager::GetTypeMap() const

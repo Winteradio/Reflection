@@ -1,6 +1,6 @@
-#include <LogProject/Log.h>
-#include <LogProject/LogPlatform.h>
-#include "Reflection.h"
+#include <Log/include/Log.h>
+#include <Log/include/LogPlatform.h>
+#include <Reflection.h>
 
 class IObject
 {

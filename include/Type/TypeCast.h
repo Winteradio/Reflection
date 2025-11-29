@@ -2,7 +2,7 @@
 #define __REFLECTION_CAST_H__
 
 #include "Utils.h"
-#include "Type/TypeManager.h"
+#include "Type/TypeInfo.h"
 
 namespace Reflection
 {
@@ -33,8 +33,8 @@ namespace Reflection
 	template<typename T, typename U>
 	bool IsSame()
 	{
-		const TypeInfo* TType = TypeManager::GetHandle().GetTypeInfo<T>();
-		const TypeInfo* UType = TypeManager::GetHandle().GetTypeInfo<U>();
+		const TypeInfo* TType = TypeInfo::Get<T>();
+		const TypeInfo* UType = TypeInfo::Get<U>();
 
 		return IsSame(TType, UType);
 	}
@@ -48,8 +48,8 @@ namespace Reflection
 	template<typename T, typename U>
 	bool IsChild()
 	{
-		const TypeInfo* TType = TypeManager::GetHandle().GetTypeInfo<T>();
-		const TypeInfo* UType = TypeManager::GetHandle().GetTypeInfo<U>();
+		const TypeInfo* TType = TypeInfo::Get<T>();
+		const TypeInfo* UType = TypeInfo::Get<U>();
 
 		return IsChild(TType, UType);
 	}
@@ -91,7 +91,7 @@ namespace Reflection
     	// The static check failed, now perform a dynamic check against the actual runtime object type.
 
 		// Get TypeInfo for the target type (T)
-		const TypeInfo* outputType = TypeManager::GetHandle().GetTypeInfo<TType>();
+		const TypeInfo* outputType = TypeInfo::Get<TType>();
 		
 		// Get the TypeInfo of the actual instance that the pointer is pointing to.
 		const TypeInfo* inputType = pointer->GetTypeInfo();

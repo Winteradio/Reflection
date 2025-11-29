@@ -114,7 +114,7 @@ namespace Reflection
 			 */
 			Return Invoke(void* pointer, Args... args) const override
 			{
-				ClassType* instance = reinterpret_cast<ClassType*>(pointer);
+				ClassType* instance = static_cast<ClassType*>(pointer);
 				return (instance->*m_function)(std::forward<Args>(args)...);
 			}
 
@@ -167,10 +167,13 @@ namespace Reflection
 		public :
 			/**
 			 * @brief	Invoke the static method with the provided arguments.
+			 * @details	This method calls the static function directly. 
+			 * 			The `pointer` argument is required by the base virtual interface but is ignored for static methods.
 			 * @param	pointer A pointer to the instance (not used for static methods).
 			 * @param	args    The arguments to pass to the method.
+			 * @return	Return The result of the method invocation.
 			 */
-			Return Invoke(void* pointer, Args... args) const override
+			Return Invoke([[maybe_unused]] void* pointer, Args... args) const override
 			{
 				return m_function(std::forward<Args>(args)...);
 			}

@@ -17,19 +17,21 @@ namespace Reflection
 		public :
 			/**
 			 * @brief	Template struct for initializing PropertyInfo instances.
+			 * @details The propertyOffset is calculated via reinterpret_cast to safely support 
+			 * 			non-standard-layout types (e.g., classes with virtual functions).
 			 * @tparam	Type   The owner type of the property.
 			 * @tparam	Property The property type.
 			 */
 			template<typename Type, typename Property>
 			struct Initializer
 			{
-				TypeInfo* ownerType;
-				TypeInfo* propertyType;
+				const TypeInfo* ownerType;
+				const TypeInfo* propertyType;
 				const size_t propertyOffset;
 
 				Initializer(const size_t offset)
-					: ownerType(TypeManager::GetHandle().Register<Type>())
-					, propertyType(TypeManager::GetHandle().Register<Property>())
+					: ownerType(TypeInfo::Get<Type>())
+					, propertyType(TypeInfo::Get<Property>())
 					, propertyOffset(offset)
 				{}
 			};
@@ -46,7 +48,12 @@ namespace Reflection
 
 		public :
 			/**
-			 * @brief	Constructor for PropertyInfo.
+			 * @brief	Constructor for PropertyInfo. Registers the property with the owner TypeInfo.
+			 * @details This constructor is executed at static initialization time. 
+			 * 			It ensures the property is registered with its corresponding TypeInfo instance. 
+			 * 			**It uses const_cast to obtain a mutable TypeInfo pointer for registration,**
+			 * 			relying on the fact that this constructor is only executed during the safe 
+			 * 			static initialization phase.
 			 * @tparam	Type     The owner type of the property.
 			 * @tparam	Property The property type.
 			 * @param	initializer The initializer containing property metadata.
@@ -54,15 +61,16 @@ namespace Reflection
 			 */
 			template<typename Type, typename Property>
 			explicit PropertyInfo(const Initializer<Type, Property>& initializer, const std::string& propertyName)
-				: m_ownerType(initializer.ownerType)
-				, m_propertyType(initializer.propertyType)
+				: m_propertyName(propertyName)
 				, m_propertyOffset(initializer.propertyOffset)
-				, m_propertyName(propertyName)
+				, m_propertyType(initializer.propertyType)
+				, m_ownerType(initializer.ownerType)
 				, m_propertyAssigner(nullptr)
 			{
-				if (nullptr != initializer.ownerType)
+				TypeInfo* ownerType = const_cast<TypeInfo*>(m_ownerType);
+				if (nullptr != ownerType)
 				{
-					initializer.ownerType->AddProperty(this);
+					ownerType->AddProperty(this);
 				}
 
 				m_propertyAssigner = [](void* dest, const void* src)
@@ -111,7 +119,7 @@ namespace Reflection
 			template<typename T, typename U>
 			void Set(U& instance, const T& value) const
 			{
-				const TypeInfo* inputType = TypeManager::GetHandle().GetTypeInfo<T>();
+				const TypeInfo* inputType = TypeInfo::Get<T>();
 
 				if constexpr (Utils::IsPointer<T>::value)
 				{
@@ -194,7 +202,7 @@ namespace Reflection
 			template<typename T, typename U>
 			const Utils::RemovePointer_t<T>* GetImpl(const U& instance) const
 			{
-				const TypeInfo* outputType = TypeManager::GetHandle().GetTypeInfo<T>();
+				const TypeInfo* outputType = TypeInfo::Get<T>();
 				const char* base = reinterpret_cast<const char*>(&instance);
 				const char* address = base + m_propertyOffset;
 
@@ -219,16 +227,19 @@ namespace Reflection
 			}
 
 		public :
+			const std::string& GetPropertyName() const;
+			size_t GetPropertyOffset() const;
+
 			const TypeInfo* GetOwnerType() const;
 			const TypeInfo* GetPropertyType() const;
-			const size_t GetPropertyOffset() const;
-			const std::string& GetPropertyName() const;
 
 		private :
-			const TypeInfo* m_ownerType;
-			const TypeInfo* m_propertyType;
-			const size_t m_propertyOffset;
 			const std::string m_propertyName;
+			const size_t m_propertyOffset;
+
+			const TypeInfo* m_propertyType;
+			const TypeInfo* m_ownerType;
+
 			Assigner m_propertyAssigner;
 	};
 };
