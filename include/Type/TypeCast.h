@@ -33,10 +33,7 @@ namespace Reflection
 	template<typename T, typename U>
 	bool IsSame()
 	{
-		const TypeInfo* TType = TypeInfo::Get<T>();
-		const TypeInfo* UType = TypeInfo::Get<U>();
-
-		return IsSame(TType, UType);
+		return Utils::IsSame<T, U>::value;
 	}
 
 	/**
@@ -48,10 +45,7 @@ namespace Reflection
 	template<typename T, typename U>
 	bool IsChild()
 	{
-		const TypeInfo* TType = TypeInfo::Get<T>();
-		const TypeInfo* UType = TypeInfo::Get<U>();
-
-		return IsChild(TType, UType);
+		return Utils::IsBase<T, U>::value;
 	}
 
 	/**
@@ -63,16 +57,17 @@ namespace Reflection
 	 * @param	pointer The address of the object to be cast.
 	 * @return	T Returns a pointer of the target type T if the cast is valid, and nullptr if it fails.
 	 */
-	template<typename T, typename U>
+	template<typename T, typename U, 
+		typename TType = Utils::RemovePointer_t<T>, 
+		typename UType = Utils::RemovePointer_t<U>>
 	T Cast(U pointer)
 	{
+		static_assert(!Utils::IsConst<UType>::value || Utils::IsConst<TType>::value,
+					"Reflection::Cast<T, U> : If the U is the const qualifier, the T must be the const qualifier.");
+
 		// [Compile-time check] The output type T and input type U must both be pointer types.
 		static_assert(Utils::IsPointer<T>::value && Utils::IsPointer<U>::value,
 					"Reflection::Cast<T, U> : The T and U must be pointer type.");
-
-		// Define the Pure Types (remove pointers).
-		using TType = Utils::RemovePointer_t<T>;
-		using UType = Utils::RemovePointer_t<U>;
 
 		// Check the input pointer is valid.
 		if (pointer == nullptr)

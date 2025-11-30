@@ -1,12 +1,20 @@
+set(PROJECT_NAME ReflectionProject)
+
+if (TARGET ${PROJECT_NAME})
+    message(STATUS "# ${PROJECT_NAME} target is already defined. Skipping build configuration.")
+    
+    return()
+endif()
+
 cmake_minimum_required(VERSION 3.20)
-project(ReflectionProject LANGUAGES CXX)
+project(${PROJECT_NAME} LANGUAGES CXX)
 
 # ------ Create the library ------ #
 include(${CMAKE_SOURCE_DIR}/external/CMake/Library.cmake)
 
 option(BUILD_SHARED_LIBS "Build a shared library instead of a static one" ON)
 
-set(MAIN_DIR ${CMAKE_SOURCE_DIR})
+set(MAIN_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 set(HEADER_DIR ${MAIN_DIR}/include)
 set(SOURCE_DIR ${MAIN_DIR}/src)
 
