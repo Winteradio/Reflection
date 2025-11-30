@@ -284,6 +284,25 @@ namespace Reflection
 		{
 			using Type = U;
 		};
+
+		template<bool Condition, typename T, typename U>
+		using Conditional_t = typename Conditional<Condition, T, U>::Type;
+
+		template<typename T>
+		void CheckPointer(T*) 
+		{};
+
+		template<typename Parent, typename Child, typename U = void>
+		struct IsBase
+		{
+			static constexpr bool value = false;
+		};
+
+		template<typename Parent, typename Child>
+		struct IsBase<Parent, Child, decltype(CheckPointer<Parent>(static_cast<Child*>(nullptr)))>
+		{
+			static constexpr bool value = true;
+		};
 	};
 };
 #endif // __REFLECTION_UTILS_H__
