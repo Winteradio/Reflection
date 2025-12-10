@@ -4,3 +4,6 @@
 [submodule "external/Log"]
 	path = external/Log
 	url = https://github.com/Winteradio/Log.git
+[submodule "external/Container"]
+	path = external/Container
+	url = https://github.com/Winteradio/Container.git
