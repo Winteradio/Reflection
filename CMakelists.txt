@@ -12,7 +12,7 @@ project(${PROJECT_NAME} LANGUAGES CXX)
 # ------ Create the library ------ #
 include(${CMAKE_SOURCE_DIR}/external/CMake/Library.cmake)
 
-option(BUILD_SHARED_LIBS "Build a shared library instead of a static one" ON)
+set(LIBRARY_TYPE "SHARED" CACHE STRING "Build a shared library instead of a static one")
 
 set(MAIN_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 set(HEADER_DIR ${MAIN_DIR}/include)
@@ -50,7 +50,7 @@ set(SOURCE_LIST
 )
 
 create_library(
-    SHARED_LIBRARY ${BUILD_SHARED_LIBS}
+    LIBRARY_TYPE ${LIBRARY_TYPE}
     TARGET_NAME ${PROJECT_NAME}
     PUBLIC_HEADERS ${HEADER_LIST}
     PRIVATE_SOURCES ${SOURCE_LIST}
@@ -58,8 +58,7 @@ create_library(
 
 install_library(
     TARGET_NAME ${PROJECT_NAME}
-    PUBLIC_HEADERS ${HEADER_LIST}
-    PUBLIC_INCLUDE_DIRS ${INCLUDE_DIR_LIST}
+    INCLUDE_DIRS ${INCLUDE_DIR_LIST}
 )
 
 # ------ Set the project options ------ #
