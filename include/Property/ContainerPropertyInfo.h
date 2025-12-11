@@ -156,7 +156,6 @@ namespace Reflection
 		explicit ContainerPropertyInfo(const Initializer<Type, Property>& initializer, const std::string& propertyName)
 			: PropertyInfo(initializer, propertyName)
 		{
-			using ContainerIterator = typename Utils::IteratorTraits<Property>::Iterator;
 			using ContainerConstIterator = typename Utils::IteratorTraits<Property>::ConstIterator;
 
 			m_nextFunc = [](Iterator& iterator)
