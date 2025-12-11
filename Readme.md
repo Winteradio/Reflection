@@ -1,62 +1,63 @@
+-----
+
 # C++17 Reflection System
 
-## 프로젝트 개요
+## Project Overview
 
-본 프로젝트는 C++17 표준을 기반으로 구현된 **타입 리플렉션(Type Reflection)** 시스템입니다.
+This project is a **Type Reflection** system implemented based on the C++17 standard.
 
-컴파일 타임 때, 객체의 설계 도면( 타입, 멤버 변수, 멤버 함수) 가 결정이 됩니다.  
-런타임, 프로그램 시작 시 해당 객체의 설계 도면 인스턴스(`TypeInfo`, `PropertyInfo`, `MethodInfo`)들이 생성됩니다.  
-런타임 때, 객체 인스턴스에 존재하는 멤버 변수(프로퍼티)와 멤버 함수(메소드)에 접근할 수 있는 기능을 제공합니다.  
+At compile time, the design blueprints (Types, Member Variables, Member Functions) of objects are determined.
+At runtime (when the program starts), instances of these design blueprints (`TypeInfo`, `PropertyInfo`, `MethodInfo`) are generated.
+It provides functionality to access member variables (Properties) and member functions (Methods) existing within object instances at runtime.
 
-주된 목표는 런타임 중, 캐스팅 시 최대한 'dynamic_cast'를 피하는 것과  
-문자열 이름을 통한 인스턴스의 정보에 동적으로 접근할 수 있는 기능을 구현하는 것입니다.  
+The main goals are to minimize the use of `dynamic_cast` during runtime casting and to implement functionality for dynamically accessing instance information via string names.
 
-## 주요 기능
+## Key Features
 
-* **타입 정보 (`TypeInfo`):** 클래스의 이름, 해시 코드, 부모 클래스(`SuperType`) 정보 등을 저장 및 관리
-* **프로퍼티 정보 (`PropertyInfo`):** 멤버 변수의 이름, 타입, 메모리 오프셋을 저장, 타입 안전한 `Get`/`Set` 인터페이스 제공, `const` 객체와 `non-const` 객체를 모두 안전하게 지원  
-**(`const` 변수에 대한 처리 미적용 상태)**
-* **컨테이너 지원 (`ContainerPropertyInfo`):** `wtr::DynamicArray`, `wtr::StaticArray`, `wtr::HashSet`, `wtr::HashMap` 등 자체 컨테이너를 단일 인터페이스로 순회 및 조작 가능. **힙 할당 없는(Zero-Allocation)** 이터레이터 래퍼 제공.
-* **메소드 정보 (`MethodInfo`):** 멤버 함수 및 정적 함수의 이름, 시그니처(반환 타입, 인자 타입) 정보 저장, 타입 안전한 `Invoke` 인터페이스를 제공
-* **안전한 캐스팅 (`Cast`):** `TypeInfo`를 활용하여, `dynamic_cast`의 사용을 최대한 피하면서 런타임 중에 안전한 업/다운캐스팅 제공
-* **자동 등록:** `GENERATE`, `PROPERTY`, `METHOD` 매크로를 사용하여 클래스 정의부에 리플렉션 정보 자동 등록
-* **C++17 활용:** `if constexpr`, `inline static` 변수, 템플릿 메타프로그래밍 등을 적극 활용, 성능 오버헤드를 최소화 및 코드의 명확성 확보
-
----
-
-## 프로젝트 구성
-
-프로젝트는 다음과 같은 디렉토리 구조를 가집니다.
-
-```bash
-├── CMakeLists.txt         # 메인 CMake 빌드 스크립트
-├── include/               # 공개 헤더 파일
-│   ├── Type/          # 타입 관련 헤더 (TypeInfo, TypeManager, TypeCast, TypeMacro)
-│   ├── Property/      # 프로퍼티 관련 헤더 (PropertyInfo, ContainerPropertyInfo, PropertyMacro)
-│   ├── Method/        # 메소드 관련 헤더 (MethodInfo, MethodCall, MethodMacro)
-│   ├── Utils.h        # 공용 템플릿 유틸리티
-│   └── Reflection.h   # 사용자가 포함할 메인 헤더
-├── src/                   # 소스 파일 (구현)
-│   ├── Type/              # 타입 관련 구현 (.cpp)
-│   ├── Property/          # 프로퍼티 관련 구현 (.cpp)
-│   └── Method/            # 메소드 관련 구현 (.cpp)
-├── demofile/              # 라이브러리 사용 예제 프로젝트
-├── externaldemofile/      # 라이브러리 사용 예제 프로젝트 (CMake External Project 사용)
-└── cmake/                 # CMake 헬퍼 스크립트 (빌드 옵션, 설치 등)
-````
-
-  * **`include/`**: 라이브러리의 모든 공개 헤더 파일 위치, 기능별로 `Type`, `Property`, `Method` 하위 폴더로 구성
-  * **`src`**: 헤더 파일에 정의된 클래스 및 함수의 구현(`.cpp`) 파일 위치, `include`와 동일한 하위 폴더 구조
-  * **`demofile`, `externaldemofile`**: 라이브러리 실제 사용하는 예제 코드
-  * **`cmake`**: CMake 빌드 시스템을 위한 헬퍼 스크립트들이 포함
+  * **Type Information (`TypeInfo`):** Stores and manages class names, hash codes, and parent class (`SuperType`) information.
+  * **Property Information (`PropertyInfo`):** Stores names, types, and memory offsets of member variables. Provides a type-safe `Get`/`Set` interface. Safely supports both `const` and `non-const` objects.
+      * *(Note: Handling for `const` member variables is currently not applied.)*
+  * **Container Support (`ContainerPropertyInfo`):** Enables traversal and manipulation of custom containers like `wtr::DynamicArray`, `wtr::StaticArray`, `wtr::HashSet`, and `wtr::HashMap` via a single interface. Provides a **Zero-Allocation** iterator wrapper.
+  * **Method Information (`MethodInfo`):** Stores names and signature information (return type, argument types) for member functions and static functions. Provides a type-safe `Invoke` interface.
+  * **Safe Casting (`Cast`):** Utilizes `TypeInfo` to provide safe up/downcasting at runtime while maximizing the avoidance of `dynamic_cast`.
+  * **Auto Registration:** Uses `GENERATE`, `PROPERTY`, and `METHOD` macros to automatically register reflection information within the class definition.
+  * **C++17 Utilization:** Actively uses `if constexpr`, `inline static` variables, and template metaprogramming to minimize performance overhead and ensure code clarity.
 
 -----
 
-## 사용법
+## Project Structure
 
-1.  **헤더 포함:** `#include "Reflection/Reflection.h"` 를 사용하여 필요한 모든 기능을 포함
+The project has the following directory structure:
 
-2.  **클래스 등록 (`GENERATE`):** 리플렉션을 사용하려는 클래스 정의부 (`public` 또는 `private` 영역)에 `GENERATE(ClassName)` 매크로를 추가
+```bash
+├── CMakeLists.txt         # Main CMake build script
+├── include/               # Public header files
+│   ├── Type/              # Type-related headers (TypeInfo, TypeManager, TypeCast, TypeMacro)
+│   ├── Property/          # Property-related headers (PropertyInfo, ContainerPropertyInfo, PropertyMacro)
+│   ├── Method/            # Method-related headers (MethodInfo, MethodCall, MethodMacro)
+│   ├── Utils.h            # Shared template utilities
+│   └── Reflection.h       # Main header for users to include
+├── src/                   # Source files (Implementation)
+│   ├── Type/              # Type implementation (.cpp)
+│   ├── Property/          # Property implementation (.cpp)
+│   └── Method/            # Method implementation (.cpp)
+├── demofile/              # Example project using the library
+├── externaldemofile/      # Example project using the library (via CMake External Project)
+└── cmake/                 # CMake helper scripts (Build options, Installation, etc.)
+```
+
+  * **`include/`**: Location of all public header files, organized into `Type`, `Property`, and `Method` subdirectories by function.
+  * **`src`**: Location of implementation (`.cpp`) files for classes and functions defined in headers, mirroring the `include` structure.
+  * **`demofile`, `externaldemofile`**: Example codes demonstrating the actual usage of the library.
+  * **`cmake`**: Includes helper scripts for the CMake build system.
+
+-----
+
+## Usage
+
+1.  **Include Header:** Include `#include "Reflection/Reflection.h"` to use all necessary features.
+
+2.  **Class Registration (`GENERATE`):** Add the `GENERATE(ClassName)` macro inside the class definition (in either `public` or `private` section) that you want to reflect.
 
     ```cpp
     #include "Reflection/Reflection.h"
@@ -78,7 +79,7 @@
     };
     ```
 
-3.  **프로퍼티 등록 (`PROPERTY`):** 리플렉션으로 접근하려는 멤버 변수 선언 **바로 위**에 `PROPERTY(VariableName)` 매크로 추가. 컨테이너 타입도 자동으로 감지하여 등록됩니다.
+3.  **Property Registration (`PROPERTY`):** Add the `PROPERTY(VariableName)` macro **immediately above** the member variable declaration you want to access via reflection. Container types are automatically detected and registered.
 
     ```cpp
     class ObjectB : public ObjectA
@@ -90,18 +91,18 @@
 
         public :
             PROPERTY(m_integerValue);
-            int m_intergetValue = 0; // 기본 타입
+            int m_intergetValue = 0; // Basic type
 
             PROPERTY(m_floatValue);
             float m_floatValue = 1.0f;
 
             PROPERTY(m_array);
-            wtr::DynamicArray<int> m_array; // 컨테이너 자동 지원
+            wtr::DynamicArray<int> m_array; // Automatic container support
     };
     ```
 
-4.  **메소드 등록 (`METHOD`):** 리플렉션으로 호출하려는 멤버 함수 또는 정적 함수 선언 **바로 위**에 `METHOD(FunctionName)` 매크로를 추가  
-    **(함수 오버로딩은 현재 매크로 방식으로는 지원하기 어려움)**
+4.  **Method Registration (`METHOD`):** Add the `METHOD(FunctionName)` macro **immediately above** the member function or static function declaration you want to invoke via reflection.
+    *(Function overloading is currently difficult to support with this macro approach)*
 
     ```cpp
     class ObjectC : public ObjectB
@@ -111,18 +112,18 @@
         public :
             virtual ~ObjectC() = default;
 
-            METHOD(Print);      // 멤버 함수 등록
+            METHOD(Print);      // Member function registration
             void Print(const std::string& message) { std::cout << message << std::endl; }
 
-            METHOD(Add);        // const 멤버 함수 등록
+            METHOD(Add);        // Const member function registration
             int Add(int a, int b) const { return a + b; }
 
-            METHOD(Any);        // 정적 함수 등록
+            METHOD(Any);        // Static function registration
             static void Any() { /*...*/ }
     };
     ```
 
-5.  **API 사용 (순회 예시):**
+5.  **API Usage (Iteration Example):**
 
     ```cpp
     void IterateContainer(IObject* obj)
@@ -130,10 +131,10 @@
         const Reflection::TypeInfo* typeInfo = obj->GetTypeInfo();
         const Reflection::PropertyInfo* prop = typeInfo->GetProperty("m_array");
 
-        // 컨테이너 프로퍼티인지 확인
+        // Check if it is a container property
         if (auto* arrayProp = Reflection::Cast<const Reflection::ArrayPropertyInfo*>(prop))
         {
-            // 이터레이터 생성 (힙 할당 없음)
+            // Create iterator (No heap allocation)
             auto it = arrayProp->begin(obj);
             auto end = arrayProp->end(obj);
 
@@ -148,52 +149,51 @@
 
 -----
 
-## 개발 과정 및 문제 해결
+## Development Process & Problem Solving
 
-이 리플렉션 시스템을 개발하면서 몇 가지 중요한 기술적 문제에 직면했고, 다음과 같이 해결했습니다.
+During the development of this reflection system, several significant technical challenges were encountered and resolved as follows:
 
-1.  **C++17 표준 필요성:**
+1.  **Need for C++17 Standard:**
 
-      * **문제:** 초기 설계는 헤더 파일에서 `static` 멤버 변수를 정의하고 초기화하는 방식을 구상했습니다 (`Property`/`Method` 정보 자동 등록). 하지만 C++17 이전 버전에서는 `static` 멤버 변수를 헤더에서 `inline` 키워드 없이 초기화할 수 없어 링크 오류가 발생했습니다.
-      * **해결:** C++17 표준부터 지원되는 **`inline static` 멤버 변수** 기능을 활용하기 위해 프로젝트의 C++ 표준을 **C++17로 상향** 조정했습니다. 이를 통해 매크로만으로 헤더 파일에서 리플렉션 정보의 정의와 초기화를 깔끔하게 처리할 수 있게 되었습니다.
+      * **Problem:** The initial design planned to define and initialize `static` member variables in header files (for auto-registration of `Property`/`Method` info). However, prior to C++17, initializing `static` member variables in headers without the `inline` keyword caused linkage errors.
+      * **Solution:** The project standard was **upgraded to C++17** to utilize the **`inline static` member variable** feature supported from C++17 onwards. This allowed for clean handling of reflection information definition and initialization within header files using only macros.
 
-2.  **템플릿 메타프로그래밍(TMP) 학습 및 적용:**
+2.  **Learning and Applying Template Metaprogramming (TMP):**
 
-      * **문제:** 부모 클래스 타입 추론(`SuperType`), `const` 멤버 함수 구분, 함수 시그니처 분석 등 컴파일 타임에 타입 정보를 다루어야 하는 복잡한 요구사항들이 있었습니다.
-      * **해결:**
-          * **SFINAE (Substitution Failure Is Not An Error):** `Utils::TypeDetector` 등에서 SFINAE 기법(특히 `Utils::TypeWrapper` 활용)을 사용하여 특정 타입(예: `SuperType` 또는 `ThisType`)의 존재 유무에 따라 템플릿 구현을 분기하는 방법을 학습하고 적용했습니다. SFINAE가 **즉시 컨텍스트(immediate context)** 내에서의 치환 실패만 오류로 간주하지 않는다는 점을 이해하는 것이 중요했습니다.
-          * **`if constexpr`:** C++17의 `if constexpr`를 적극 활용하여, 템플릿 인자(`T`, `U`)의 특성(`Utils::IsPointer`, `Utils::IsSame` 등)에 따라 컴파일 타임에 코드를 분기했습니다. 이를 통해 불필요한 런타임 분기나 가상 함수 호출 없이 성능을 최적화할 수 있었습니다.
-          * **템플릿 특수화:** **함수 템플릿은 부분 특수화가 불가능**하다는 제약을 이해하고, 클래스 템플릿의 \*\*부분 특수화(partial specialization)\*\*가 가능하다는 점을 이용하여 `MethodCreator`를 구현했습니다.
-          * **템플릿 매개변수 규칙:** 템플릿 매개변수의 순서 (타입 -\> 타입 팩 -\> 비-타입), 비-타입 매개변수의 제한 (함수 포인터 값은 가능하지만 이를 이용한 클래스 템플릿 특수화는 불가) 등 C++ 템플릿의 미묘한 규칙들을 이해하고 적용하는 과정이 필요했습니다.
+      * **Problem:** Complex requirements involving compile-time type information manipulation, such as deducing parent class types (`SuperType`), distinguishing `const` member functions, and analyzing function signatures.
+      * **Solution:**
+          * **SFINAE (Substitution Failure Is Not An Error):** Learned and applied techniques using `Utils::TypeDetector` (specifically utilizing `Utils::TypeWrapper`) to branch template implementations based on the existence of specific types (e.g., `SuperType` or `ThisType`). It was crucial to understand that SFINAE considers substitution failures only within the **immediate context**.
+          * **`if constexpr`:** Actively utilized C++17's `if constexpr` to branch code at compile-time based on traits of template arguments `T` and `U` (e.g., `Utils::IsPointer`, `Utils::IsSame`). This optimized performance by eliminating unnecessary runtime branches or virtual function calls.
+          * **Template Specialization:** Understood the constraint that **function templates cannot be partially specialized**, and implemented `MethodCreator` by leveraging the fact that **class templates support partial specialization**.
+          * **Template Parameter Rules:** Required understanding and application of subtle C++ template rules, such as the order of template parameters (Type -\> Type Pack -\> Non-Type) and limitations of non-type parameters (function pointer values are allowed, but using them for class template specialization has specific constraints).
 
-3.  **컨테이너 리플렉션 및 Iterator 추상화 (Container Support):**
+3.  **Container Reflection and Iterator Abstraction (Container Support):**
 
-      * **문제:** `wtr::DynamicArray`, `wtr::HashMap` 등 서로 다른 메모리 레이아웃을 가진 컨테이너들을 \*\*단일 인터페이스(`Iterator`)\*\*로 제어해야 했습니다. 일반적인 가상 함수 기반 이터레이터(`IIterator*`)는 매번 \*\*힙 할당(new)\*\*이 발생하여 성능 저하 및 메모리 파편화를 유발합니다.
-      * **해결:**
-          * **Type Erasure & SBO:** 64바이트 고정 크기 버퍼(`alignas(void*) uint8_t m_storage[64]`)를 가진 `Iterator` 클래스를 구현하여 힙 할당을 제거했습니다.
-          * **Placement New & VTable:** 람다 함수(`m_nextFunc`, `m_copyFunc`)를 통해 버퍼 내부의 실제 STL Iterator를 조작하도록 구현했습니다.
-          * **안전성 확보:** `CopyFunc`와 `DestroyFunc`를 구현하여, 이터레이터 복사/대입 시 **Deep Copy**를 수행하고 소멸자를 명시적으로 호출함으로써, Debug Mode에서의 크래시(Double Free, List Corruption)를 완벽하게 방지했습니다.
-          * **자동 감지:** `PropertyCreator`에서 SFINAE(`HasIterator`, `HasKey` 등)를 이용해 컴파일 타임에 컨테이너 종류(`Array`/`Set`/`Map`)를 자동 판별하여 적절한 `ContainerPropertyInfo`를 생성합니다.
+      * **Problem:** Needed to control containers with different memory layouts, such as `wtr::DynamicArray` and `wtr::HashMap`, via a **single interface (`Iterator`)**. A typical virtual function-based iterator (`IIterator*`) causes **heap allocation (`new`)** every time, leading to performance degradation and memory fragmentation.
+      * **Solution:**
+          * **Type Erasure & SBO:** Implemented an `Iterator` class with a fixed-size 64-byte buffer (`alignas(void*) uint8_t m_storage[64]`) to eliminate heap allocation.
+          * **Placement New & VTable:** Implemented manipulation of the actual internal STL iterator within the buffer via lambda functions (`m_nextFunc`, `m_copyFunc`).
+          * **Safety Assurance:** Implemented `CopyFunc` and `DestroyFunc` to perform **Deep Copy** during iterator copy/assignment and to explicitly call destructors, thereby perfectly preventing crashes (Double Free, List Corruption) in Debug Mode.
+          * **Auto Detection:** Used SFINAE (`HasIterator`, `HasKey`, etc.) in `PropertyCreator` to automatically determine the container type (`Array`/`Set`/`Map`) at compile-time and generate the appropriate `ContainerPropertyInfo`.
 
-4.  **Property의 `const` 정확성 문제:**
+4.  **Property `const` Correctness:**
 
-      * **문제:** `Get` 함수가 `const` 객체를 받을 때 `non-const` 포인터를 반환하면 C++의 `const` 규칙을 위반하고 위험한 코드를 작성할 수 있었습니다. 하나의 함수로 합치려 했으나, C++의 `const` 규칙 상 반환 타입이 달라 불가능했습니다.
-      * **해결:** `Get` 함수를 `const U&`를 받는 버전(const 포인터 반환)과 `U&`를 받는 버전(non-const 포인터 반환)으로 **오버로딩**했습니다. 실제 구현 로직은 `private GetImpl` 함수 하나에 `const` 버전으로 작성하고, `non-const Get`는 이 `Impl`을 호출한 뒤 반환값에만 안전하게 `const_cast`를 적용하여 코드 중복을 피했습니다. 이는 C++의 표준적인 `const` 처리 방식입니다.
+      * **Problem:** If a `Get` function receives a `const` object but returns a `non-const` pointer, it violates C++ `const` rules and allows for dangerous code. Merging into a single function was impossible due to differing return types required by C++ `const` rules.
+      * **Solution:** **Overloaded** the `Get` function into a version accepting `const U&` (returning a const pointer) and a version accepting `U&` (returning a non-const pointer). The actual implementation logic was written in a single private `GetImpl` function (const version), and the `non-const Get` calls this `Impl` and then safely applies `const_cast` only to the return value to avoid code duplication. This is a standard C++ idiom for handling `const`.
 
-5.  **Property `Set` 시 타입 안전성 및 단순화:**
+5.  **Type Safety and Simplification in Property `Set`:**
 
-      * **문제:** 초기에는 `Get`와 `Set`가 동일한 타입 체크 로직(상속 관계 허용)을 사용했으나, `Set`의 경우 `instance` 대입 시 객체 잘림(slicing) 또는 포인터 대입 시 의도치 않은 다형성 허용 문제가 있었습니다. 특히 `instance` 대입은 메모리 오염 위험도 있었습니다.
-      * **해결:** API의 명확성과 안전성을 위해 `Set`는 \*\*정확히 동일한 타입(`Utils::IsSame`)\*\*만 허용하도록 규칙을 단순화했습니다. 이로 인해 API 사용이 더 예측 가능해지고 모든 위험한 상황이 원천 차단되었습니다.
+      * **Problem:** Initially, `Get` and `Set` used the same type-checking logic (allowing inheritance relationships). However, for `Set`, assigning an `instance` caused object slicing, and assigning pointers caused issues with unintended polymorphism allowance. Specifically, `instance` assignment posed a risk of memory corruption.
+      * **Solution:** For API clarity and safety, the rule for `Set` was simplified to allow only **strictly identical types (`Utils::IsSame`)**. This made API usage more predictable and fundamentally blocked all hazardous situations.
 
-6.  **Method 객체의 `static` 생성 (동적 할당 회피):**
+6.  **Static Generation of Method Objects (Avoiding Dynamic Allocation):**
 
-      * **문제:** 각 메소드 정보를 담는 `MethodCall` 객체들을 `new`로 동적 할당하면 메모리 단편화 및 관리 오버헤드가 발생할 수 있었습니다. `static` 변수를 사용하려 했으나, 시그니처가 같은 다른 함수들(e.g., `Foo()`, `Bar()`)이 동일한 `static` 객체를 공유하는 문제가 있었습니다.
-      * **해결:** \*\*비-타입 템플릿 매개변수(non-type template parameter)\*\*를 활용한 `MethodCreator<typename Func, Func func>` 템플릿 구조체를 도입했습니다. 이 구조체는 함수 포인터 **값**(`func`)마다 고유하게 인스턴스화되므로, 구조체 내부에서 `static MethodCall` 객체를 선언하면 각 함수 포인터마다 고유한 `static` 객체를 `new` 없이 생성할 수 있게 되었습니다.
+      * **Problem:** Dynamically allocating `MethodCall` objects for each method using `new` could cause memory fragmentation and management overhead. Attempting to use `static` variables faced the issue where different functions with the same signature (e.g., `Foo()`, `Bar()`) would share the same `static` object.
+      * **Solution:** Introduced a `MethodCreator<typename Func, Func func>` template struct using **non-type template parameters**. Since this struct is instantiated uniquely for each function pointer **value** (`func`), declaring a `static MethodCall` object inside the struct allows for the creation of unique `static` objects for each function pointer without `new`.
 
-7.  **헤더 순환 참조 문제:**
+7.  **Header Circular Dependency:**
 
-      * **문제:** `MethodInfo`, `MethodCall`, `Macro`, `TypeInfo` 등의 헤더 파일들이 서로를 참조하면서 순환 포함 문제가 발생했습니다.
-      * **해결:** 초기 `Macro.h`를 기능별(`TypeMacro.h`, `PropertyMacro.h`, `MethodMacro.h`)로 분리하고, 각 헤더 파일에서는 필요한 다른 클래스를 `#include`하는 대신 \*\*전방 선언(forward declaration)\*\*을 최대한 활용했습니다. 실제 구현이 필요한 `.cpp` 파일에서만 해당 헤더들을 포함하도록 하여 순환 고리를 끊었습니다.
+      * **Problem:** Header files such as `MethodInfo`, `MethodCall`, `Macro`, and `TypeInfo` referenced each other, causing circular inclusion issues.
+      * **Solution:** Split the initial `Macro.h` into functional units (`TypeMacro.h`, `PropertyMacro.h`, `MethodMacro.h`). In each header file, instead of `#include`-ing required classes, **forward declarations** were utilized as much as possible. The headers were included only in the `.cpp` files where actual implementation was needed, breaking the circular dependency chain.
 
-8.  **기타:** `Cast` 함수 내 `GetTypeInfo()` 호출 시 `const` 문제 해결 (`GENERATE` 매크로의 `GetTypeInfo`를 `const`로 변경), 템플릿 클래스 내 `GENERATE` 매크로 사용 시 `typename` 키워드 누락 문제 해결 등 컴파일 오류들을 수정했습니다.
-
+8.  **Miscellaneous:** Fixed compilation errors such as resolving `const` correctness in `Cast` function calls to `GetTypeInfo()` (changed `GetTypeInfo` in `GENERATE` macro to `const`), and fixing missing `typename` keywords when using the `GENERATE` macro inside template classes.
