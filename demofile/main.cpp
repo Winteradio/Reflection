@@ -7,6 +7,8 @@
 
 #include <Reflection.h>
 
+#include <vector>
+
 class IObject
 {
 	GENERATE(IObject);

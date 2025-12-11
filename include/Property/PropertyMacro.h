@@ -24,6 +24,7 @@
 				static_assert(!Reflection::Utils::IsReference<decltype(ThisType::Property)>::value, "Reflection::PROPERTY : The property cannot be a reference type."); \
 				static std::string propertyName = std::string(#Property); \
 				static const Reflection::PropertyInfo* property = Reflection::PropertyCreator<decltype(&ThisType::Property), &ThisType::Property>::Create(propertyName); \
+				assert(nullptr != property && "The property is invalid."); \
 			}; \
 		}; \
 		\
