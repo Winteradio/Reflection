@@ -2,6 +2,7 @@
 #define __REFLECTION_PROPERTYMACRO_H__
 
 #include "Property/PropertyInfo.h"
+#include "Property/PropertyCreator.h"
 
 /**
  * @brief	Registers a property into the Reflection System.
@@ -14,15 +15,15 @@
  * 			It also statically asserts that the property is not a reference type, as pointers to references are not valid in C++.
  * @param	Property The member variable name to register.
  */
+
 #define PROPERTY( Property ) \
 		struct RegisterProperty##Property \
 		{ \
 			RegisterProperty##Property() \
 			{ \
 				static_assert(!Reflection::Utils::IsReference<decltype(ThisType::Property)>::value, "Reflection::PROPERTY : The property cannot be a reference type."); \
-				static size_t offset = reinterpret_cast<size_t>(&(reinterpret_cast<ThisType*>(0)->Property)); \
-				static Reflection::PropertyInfo::Initializer<ThisType, decltype(ThisType::Property)> initializer(offset); \
-				static Reflection::PropertyInfo propertyInfo(initializer, std::string(#Property)); \
+				static std::string propertyName = std::string(#Property); \
+				static const Reflection::PropertyInfo* property = Reflection::PropertyCreator<decltype(&ThisType::Property), &ThisType::Property>::Create(propertyName); \
 			}; \
 		}; \
 		\

@@ -4,6 +4,7 @@
 #include <string>
 
 #include "Type/TypeCast.h"
+#include "Type/TypeMacro.h"
 
 namespace Reflection
 {
@@ -14,6 +15,8 @@ namespace Reflection
 	 */
 	class PropertyInfo
 	{
+		GENERATE(PropertyInfo);
+
 		public :
 			/**
 			 * @brief	Template struct for initializing PropertyInfo instances.
@@ -233,7 +236,7 @@ namespace Reflection
 			const TypeInfo* GetOwnerType() const;
 			const TypeInfo* GetPropertyType() const;
 
-		private :
+		protected :
 			const std::string m_propertyName;
 			const size_t m_propertyOffset;
 

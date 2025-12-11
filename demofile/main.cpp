@@ -1,5 +1,10 @@
 #include <Log/include/Log.h>
 #include <Log/include/LogPlatform.h>
+#include <Container/include/HashMap.h>
+#include <Container/include/HashSet.h>
+#include <Container/include/DynamicArray.h>
+#include <Container/include/StaticArray.h>
+
 #include <Reflection.h>
 
 class IObject
@@ -19,6 +24,18 @@ class IObject
 	public :
 		PROPERTY(m_Value);
 		int m_Value;
+
+		PROPERTY(m_dArray);
+		wtr::DynamicArray<int> m_dArray;
+
+		PROPERTY(m_sArray);
+		wtr::StaticArray<int, 10> m_sArray;
+
+		PROPERTY(m_set);
+		wtr::HashSet<int> m_set;
+
+		PROPERTY(m_map);
+		wtr::HashMap<int, int> m_map;
 
 		// PROPERTY(m_RefValue);
 		// int& m_RefValue = m_Value;
@@ -106,16 +123,40 @@ namespace Test
 
 		if (propertyInfo->GetPropertyType() != propertyInfo->GetPropertyType()->GetPureType())
 		{
-			LOGINFO() << "  Property " 
-						<< " Type : " << propertyInfo->GetPropertyType()->GetTypeName()
-						<< " / Pure Type : " << propertyInfo->GetPropertyType()->GetPureType()->GetTypeName()
-						<< " / Name : " << propertyInfo->GetPropertyName();
+			LOGINFO() << "  Property "
+				<< " Type : " << propertyInfo->GetPropertyType()->GetTypeName()
+				<< " / Pure Type : " << propertyInfo->GetPropertyType()->GetPureType()->GetTypeName()
+				<< " / Name : " << propertyInfo->GetPropertyName();
 		}
 		else
 		{
-			LOGINFO() << "  Property " 
-						<< " Type : " << propertyInfo->GetPropertyType()->GetTypeName()
-						<< " / Name : " << propertyInfo->GetPropertyName();
+			LOGINFO() << "  Property "
+				<< " Type : " << propertyInfo->GetPropertyType()->GetTypeName()
+				<< " / Name : " << propertyInfo->GetPropertyName();
+		}
+
+		auto arrayInfo = Reflection::Cast<const Reflection::ArrayPropertyInfo*>(propertyInfo);
+		if (nullptr != arrayInfo)
+		{
+			LOGINFO() << "   Element "
+				<< " Type : " << arrayInfo->GetElementType()->GetTypeName();
+		}
+
+		auto setInfo = Reflection::Cast<const Reflection::SetPropertyInfo*>(propertyInfo);
+		if (nullptr != setInfo)
+		{
+			LOGINFO() << "   Element "
+				<< " Type : " << setInfo->GetElementType()->GetTypeName()
+				<< " / Key Type : " << setInfo->GetKeyType()->GetTypeName();
+		}
+
+		auto mapInfo = Reflection::Cast<const Reflection::MapPropertyInfo*>(propertyInfo);
+		if (nullptr != mapInfo)
+		{
+			LOGINFO() << "   Element "
+				<< " Type : " << mapInfo->GetElementType()->GetTypeName()
+				<< " / Key Type : " << mapInfo->GetKeyType()->GetTypeName()
+				<< " / Value Type : " << mapInfo->GetValueType()->GetTypeName();
 		}
 	}
 
@@ -342,6 +383,37 @@ namespace Test
 	}
 };
 
+void Container()
+{
+	IObject test;
+	test.m_dArray = { 1,2,3,4,5,6,7,7,8 };
+
+	const auto* typeInfo = Reflection::TypeInfo::Get<IObject>();
+	if (nullptr == typeInfo)
+	{
+		return;
+	}
+
+	const auto* propertyInfo = typeInfo->GetProperty("m_dArray");
+	if (nullptr == propertyInfo)
+	{
+		return;
+	}
+
+	const auto* arrayPropertyInfo = Reflection::Cast<const Reflection::ArrayPropertyInfo*>(propertyInfo);
+	if (nullptr == arrayPropertyInfo)
+	{
+		return;
+	}
+
+	auto beginItr = arrayPropertyInfo->begin(&test);
+	auto endItr = arrayPropertyInfo->end(&test);
+	for (auto itr = beginItr; itr != endItr; itr++)
+	{
+		LOGINFO() << *static_cast<const int*>(itr.get());
+	}
+}
+
 int MAIN()
 {
 	Log::Init(1024, Log::Enum::eMode_Print, Log::Enum::eLevel_Time | Log::Enum::eLevel_Type);
@@ -352,6 +424,8 @@ int MAIN()
 	Test::Cast();
 	Test::Property();
 	Test::Invoke();
+
+	Container();
 
 	system("pause");
 

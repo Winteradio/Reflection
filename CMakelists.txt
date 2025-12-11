@@ -30,6 +30,8 @@ set(HEADER_LIST
     ${HEADER_DIR}/Method/MethodInfo.h
     ${HEADER_DIR}/Method/MethodMacro.h
 
+    ${HEADER_DIR}/Property/ContainerPropertyInfo.h
+    ${HEADER_DIR}/Property/PropertyCreator.h
     ${HEADER_DIR}/Property/PropertyInfo.h
     ${HEADER_DIR}/Property/PropertyMacro.h
 
