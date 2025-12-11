@@ -16,7 +16,7 @@
 * **타입 정보 (`TypeInfo`):** 클래스의 이름, 해시 코드, 부모 클래스(`SuperType`) 정보 등을 저장 및 관리
 * **프로퍼티 정보 (`PropertyInfo`):** 멤버 변수의 이름, 타입, 메모리 오프셋을 저장, 타입 안전한 `Get`/`Set` 인터페이스 제공, `const` 객체와 `non-const` 객체를 모두 안전하게 지원  
 **(`const` 변수에 대한 처리 미적용 상태)**
-* **컨테이너 지원 (`ContainerPropertyInfo`):** `std::vector`, `std::map`, `std::set` 등 STL 컨테이너를 단일 인터페이스로 순회 및 조작 가능. **힙 할당 없는(Zero-Allocation)** 이터레이터 래퍼 제공.
+* **컨테이너 지원 (`ContainerPropertyInfo`):** `wtr::DynamicArray`, `wtr::StaticArray`, `wtr::HashSet`, `wtr::HashMap` 등 자체 컨테이너를 단일 인터페이스로 순회 및 조작 가능. **힙 할당 없는(Zero-Allocation)** 이터레이터 래퍼 제공.
 * **메소드 정보 (`MethodInfo`):** 멤버 함수 및 정적 함수의 이름, 시그니처(반환 타입, 인자 타입) 정보 저장, 타입 안전한 `Invoke` 인터페이스를 제공
 * **안전한 캐스팅 (`Cast`):** `TypeInfo`를 활용하여, `dynamic_cast`의 사용을 최대한 피하면서 런타임 중에 안전한 업/다운캐스팅 제공
 * **자동 등록:** `GENERATE`, `PROPERTY`, `METHOD` 매크로를 사용하여 클래스 정의부에 리플렉션 정보 자동 등록
@@ -96,7 +96,7 @@
             float m_floatValue = 1.0f;
 
             PROPERTY(m_array);
-            std::vector<int> m_array; // 컨테이너 자동 지원
+            wtr::DynamicArray<int> m_array; // 컨테이너 자동 지원
     };
     ```
 
@@ -168,7 +168,7 @@
 
 3.  **컨테이너 리플렉션 및 Iterator 추상화 (Container Support):**
 
-      * **문제:** `std::vector`, `std::map` 등 서로 다른 메모리 레이아웃을 가진 컨테이너들을 \*\*단일 인터페이스(`Iterator`)\*\*로 제어해야 했습니다. 일반적인 가상 함수 기반 이터레이터(`IIterator*`)는 매번 \*\*힙 할당(new)\*\*이 발생하여 성능 저하 및 메모리 파편화를 유발합니다.
+      * **문제:** `wtr::DynamicArray`, `wtr::HashMap` 등 서로 다른 메모리 레이아웃을 가진 컨테이너들을 \*\*단일 인터페이스(`Iterator`)\*\*로 제어해야 했습니다. 일반적인 가상 함수 기반 이터레이터(`IIterator*`)는 매번 \*\*힙 할당(new)\*\*이 발생하여 성능 저하 및 메모리 파편화를 유발합니다.
       * **해결:**
           * **Type Erasure & SBO:** 64바이트 고정 크기 버퍼(`alignas(void*) uint8_t m_storage[64]`)를 가진 `Iterator` 클래스를 구현하여 힙 할당을 제거했습니다.
           * **Placement New & VTable:** 람다 함수(`m_nextFunc`, `m_copyFunc`)를 통해 버퍼 내부의 실제 STL Iterator를 조작하도록 구현했습니다.
@@ -196,3 +196,4 @@
       * **해결:** 초기 `Macro.h`를 기능별(`TypeMacro.h`, `PropertyMacro.h`, `MethodMacro.h`)로 분리하고, 각 헤더 파일에서는 필요한 다른 클래스를 `#include`하는 대신 \*\*전방 선언(forward declaration)\*\*을 최대한 활용했습니다. 실제 구현이 필요한 `.cpp` 파일에서만 해당 헤더들을 포함하도록 하여 순환 고리를 끊었습니다.
 
 8.  **기타:** `Cast` 함수 내 `GetTypeInfo()` 호출 시 `const` 문제 해결 (`GENERATE` 매크로의 `GetTypeInfo`를 `const`로 변경), 템플릿 클래스 내 `GENERATE` 매크로 사용 시 `typename` 키워드 누락 문제 해결 등 컴파일 오류들을 수정했습니다.
+
