@@ -236,7 +236,7 @@ namespace Reflection
 			const TypeInfo* GetOwnerType() const;
 			const TypeInfo* GetPropertyType() const;
 
-		private :
+		protected :
 			const std::string m_propertyName;
 			const size_t m_propertyOffset;
 

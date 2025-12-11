@@ -21,7 +21,10 @@ project_options()
 message(STATUS "- Demo : Add the Log project")
 
 set(LOG_DEMO_FILE OFF)
-add_subdirectory(${CMAKE_SOURCE_DIR}/external/Log build)
+add_subdirectory(${CMAKE_SOURCE_DIR}/external/Log Log)
+
+set(CONTAINER_DEMO_FILE OFF)
+add_subdirectory(${CMAKE_SOURCE_DIR}/external/Container Container)
 
 # ------ Set the properties the executable program ------ #
 set(MAIN_DIR ${CMAKE_CURRENT_SOURCE_DIR})
