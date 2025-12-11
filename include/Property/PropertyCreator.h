@@ -7,68 +7,13 @@
 
 namespace Reflection
 {
-	template<typename T, typename = void>
-	struct HasIterator
-	{
-		static constexpr bool value = false;
-	};
-
-	template<typename T>
-	struct HasIterator<T, typename Utils::TypeWrapper<typename T::Iterator>::Type>
-	{
-		static constexpr bool value = true;
-	};
-
-	template<typename T, typename = void>
-	struct HasKey
-	{
-		static constexpr bool value = false;
-	};
-
-	template<typename T>
-	struct HasKey<T, typename Utils::TypeWrapper<typename T::KeyType>::Type>
-	{
-		static constexpr bool value = true;
-	};
-
-	template<typename T, typename = void>
-	struct HasValue
-	{
-		static constexpr bool value = false;
-	};
-
-	template<typename T>
-	struct HasValue<T, typename Utils::TypeWrapper<typename T::ValueType>::Type>
-	{
-		static constexpr bool value = true;
-	};
-
-	template<typename T>
-	constexpr bool IsArray = HasIterator<T>::value && !HasKey<T>::value && !HasValue<T>::value;
-
-	template<typename T>
-	constexpr bool IsSet = HasIterator<T>::value && HasKey<T>::value && !HasValue<T>::value;
-
-	template<typename T>
-	constexpr bool IsMap = HasIterator<T>::value && HasKey<T>::value && HasValue<T>::value;
-
-	template<typename T>
-	struct MemberTraits;
-
-	template<typename Class, typename Property>
-	struct MemberTraits<Property Class::*>
-	{
-		using ClassType = Class;
-		using PropertyType = Property;
-	};
-
 	template<typename Pointer, Pointer pointer, typename = void>
 	struct PropertyCreator
 	{
 		static const PropertyInfo* Create(const std::string& propertyName)
 		{
-			using Class = typename MemberTraits<Pointer>::ClassType;
-			using Property = typename MemberTraits<Pointer>::PropertyType;
+			using Class = typename Utils::MemberTraits<Pointer>::ClassType;
+			using Property = typename Utils::MemberTraits<Pointer>::PropertyType;
 
 			static size_t offset = reinterpret_cast<size_t>(&(static_cast<Class*>(nullptr)->*pointer));
 			static PropertyInfo::Initializer<Class, Property> initializer(offset);
@@ -79,7 +24,7 @@ namespace Reflection
 	};
 
 	template<typename Class, typename Property, Property Class::* pointer>
-	struct PropertyCreator<Property Class::*, pointer, typename Utils::IsEnabled_t<IsArray<Property>>>
+	struct PropertyCreator<Property Class::*, pointer, typename Utils::IsEnabled_t<Utils::IsArray<Property>>>
 	{
 		static const PropertyInfo* Create(const std::string& propertyName)
 		{
@@ -92,7 +37,7 @@ namespace Reflection
 	};
 
 	template<typename Class, typename Property, Property Class::* pointer>
-	struct PropertyCreator<Property Class::*, pointer, typename Utils::IsEnabled_t<IsSet<Property>>>
+	struct PropertyCreator<Property Class::*, pointer, typename Utils::IsEnabled_t<Utils::IsSet<Property>>>
 	{
 		static const PropertyInfo* Create(const std::string& propertyName)
 		{
@@ -105,7 +50,7 @@ namespace Reflection
 	};
 
 	template<typename Class, typename Property, Property Class::* pointer>
-	struct PropertyCreator<Property Class::*, pointer, typename Utils::IsEnabled_t<IsMap<Property>>>
+	struct PropertyCreator<Property Class::*, pointer, typename Utils::IsEnabled_t<Utils::IsMap<Property>>>
 	{
 		static const PropertyInfo* Create(const std::string& propertyName)
 		{

@@ -303,6 +303,123 @@ namespace Reflection
 		{
 			static constexpr bool value = true;
 		};
+
+		template<typename T, typename = void>
+		struct IteratorTraits;
+
+		template<typename T>
+		struct IteratorTraits<T, typename TypeWrapper<typename T::Iterator, typename T::ConstIterator>::Type>
+		{
+			using Iterator = typename T::Iterator;
+			using ConstIterator = typename T::ConstIterator;
+		};
+
+		template<typename T>
+		struct IteratorTraits<T, typename TypeWrapper<typename T::iterator, typename T::const_iterator>::Type>
+		{
+			using Iterator = typename T::iterator;
+			using ConstIterator = typename T::const_iterator;
+		};
+
+		template<typename T, typename = void>
+		struct KeyTraits;
+
+		template<typename T>
+		struct KeyTraits<T, typename TypeWrapper<typename T::key_type>::Type>
+		{
+			using KeyType = typename T::key_type;
+		};
+
+		template<typename T>
+		struct KeyTraits<T, typename TypeWrapper<typename T::KeyType>::Type>
+		{
+			using KeyType = typename T::KeyType;
+		};
+
+		template<typename T, typename = void>
+		struct ValueTraits;
+
+		template<typename T>
+		struct ValueTraits<T, typename TypeWrapper<typename T::value_type>::Type>
+		{
+			using ValueType = typename T::value_type;
+		};
+
+		template<typename T>
+		struct ValueTraits<T, typename TypeWrapper<typename T::ValueType>::Type>
+		{
+			using ValueType = typename T::ValueType;
+		};
+
+		template<typename T, typename = void>
+		struct MappedTraits;
+
+		template<typename T>
+		struct MappedTraits<T, typename TypeWrapper<typename T::mapped_type>::Type>
+		{
+			using MappedType = typename T::mapped_type;
+		};
+
+		template<typename T>
+		struct MappedTraits<T, typename TypeWrapper<typename T::MappedType>::Type>
+		{
+			using MappedType = typename T::MappedType;
+		};
+
+		template<typename T, typename = void>
+		struct HasIterator
+		{
+			static constexpr bool value = false;
+		};
+
+		template<typename T>
+		struct HasIterator<T, typename Utils::TypeWrapper<typename IteratorTraits<T>::Iterator>::Type>
+		{
+			static constexpr bool value = true;
+		};
+
+		template<typename T, typename = void>
+		struct HasKey
+		{
+			static constexpr bool value = false;
+		};
+
+		template<typename T>
+		struct HasKey<T, typename Utils::TypeWrapper<typename KeyTraits<T>::KeyType>::Type>
+		{
+			static constexpr bool value = true;
+		};
+
+		template<typename T, typename = void>
+		struct HasMapped
+		{
+			static constexpr bool value = false;
+		};
+
+		template<typename T>
+		struct HasMapped<T, typename Utils::TypeWrapper<typename MappedTraits<T>::MappedType>::Type>
+		{
+			static constexpr bool value = true;
+		};
+
+		template<typename T>
+		constexpr bool IsArray = HasIterator<T>::value && !HasKey<T>::value && !HasMapped<T>::value;
+
+		template<typename T>
+		constexpr bool IsSet = HasIterator<T>::value && HasKey<T>::value && !HasMapped<T>::value;
+
+		template<typename T>
+		constexpr bool IsMap = HasIterator<T>::value && HasKey<T>::value && HasMapped<T>::value;
+
+		template<typename T>
+		struct MemberTraits;
+
+		template<typename Class, typename Property>
+		struct MemberTraits<Property Class::*>
+		{
+			using ClassType = Class;
+			using PropertyType = Property;
+		};
 	};
 };
 #endif // __REFLECTION_UTILS_H__
