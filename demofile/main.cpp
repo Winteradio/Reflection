@@ -37,6 +37,9 @@ class IObject
 		PROPERTY(m_map);
 		wtr::HashMap<int, int> m_map;
 
+		PROPERTY(m_vector);
+		std::vector<int> m_vector;
+
 		// PROPERTY(m_RefValue);
 		// int& m_RefValue = m_Value;
 
@@ -138,25 +141,25 @@ namespace Test
 		auto arrayInfo = Reflection::Cast<const Reflection::ArrayPropertyInfo*>(propertyInfo);
 		if (nullptr != arrayInfo)
 		{
-			LOGINFO() << "   Element "
-				<< " Type : " << arrayInfo->GetElementType()->GetTypeName();
+			LOGINFO() << "   Value "
+				<< " Type : " << arrayInfo->GetValueType()->GetTypeName();
 		}
 
 		auto setInfo = Reflection::Cast<const Reflection::SetPropertyInfo*>(propertyInfo);
 		if (nullptr != setInfo)
 		{
-			LOGINFO() << "   Element "
-				<< " Type : " << setInfo->GetElementType()->GetTypeName()
+			LOGINFO() << "   Value "
+				<< " Type : " << setInfo->GetValueType()->GetTypeName()
 				<< " / Key Type : " << setInfo->GetKeyType()->GetTypeName();
 		}
 
 		auto mapInfo = Reflection::Cast<const Reflection::MapPropertyInfo*>(propertyInfo);
 		if (nullptr != mapInfo)
 		{
-			LOGINFO() << "   Element "
-				<< " Type : " << mapInfo->GetElementType()->GetTypeName()
+			LOGINFO() << "   Value "
+				<< " Type : " << mapInfo->GetValueType()->GetTypeName()
 				<< " / Key Type : " << mapInfo->GetKeyType()->GetTypeName()
-				<< " / Value Type : " << mapInfo->GetValueType()->GetTypeName();
+				<< " / Mapped Type : " << mapInfo->GetMappedType()->GetTypeName();
 		}
 	}
 
@@ -387,30 +390,60 @@ void Container()
 {
 	IObject test;
 	test.m_dArray = { 1,2,3,4,5,6,7,7,8 };
+	test.m_vector = { 1,2,3,4,5,6,7,7,8 };
 
-	const auto* typeInfo = Reflection::TypeInfo::Get<IObject>();
-	if (nullptr == typeInfo)
 	{
-		return;
+		const auto* typeInfo = Reflection::TypeInfo::Get<IObject>();
+		if (nullptr == typeInfo)
+		{
+			return;
+		}
+
+		const auto* propertyInfo = typeInfo->GetProperty("m_dArray");
+		if (nullptr == propertyInfo)
+		{
+			return;
+		}
+
+		const auto* arrayPropertyInfo = Reflection::Cast<const Reflection::ArrayPropertyInfo*>(propertyInfo);
+		if (nullptr == arrayPropertyInfo)
+		{
+			return;
+		}
+
+		auto beginItr = arrayPropertyInfo->begin(&test);
+		auto endItr = arrayPropertyInfo->end(&test);
+		for (auto itr = beginItr; itr != endItr; itr++)
+		{
+			LOGINFO() << *static_cast<const int*>(itr.get());
+		}
 	}
 
-	const auto* propertyInfo = typeInfo->GetProperty("m_dArray");
-	if (nullptr == propertyInfo)
 	{
-		return;
-	}
+		const auto* typeInfo = Reflection::TypeInfo::Get<IObject>();
+		if (nullptr == typeInfo)
+		{
+			return;
+		}
 
-	const auto* arrayPropertyInfo = Reflection::Cast<const Reflection::ArrayPropertyInfo*>(propertyInfo);
-	if (nullptr == arrayPropertyInfo)
-	{
-		return;
-	}
+		const auto* propertyInfo = typeInfo->GetProperty("m_vector");
+		if (nullptr == propertyInfo)
+		{
+			return;
+		}
 
-	auto beginItr = arrayPropertyInfo->begin(&test);
-	auto endItr = arrayPropertyInfo->end(&test);
-	for (auto itr = beginItr; itr != endItr; itr++)
-	{
-		LOGINFO() << *static_cast<const int*>(itr.get());
+		const auto* arrayPropertyInfo = Reflection::Cast<const Reflection::ArrayPropertyInfo*>(propertyInfo);
+		if (nullptr == arrayPropertyInfo)
+		{
+			return;
+		}
+
+		auto beginItr = arrayPropertyInfo->begin(&test);
+		auto endItr = arrayPropertyInfo->end(&test);
+		for (auto itr = beginItr; itr != endItr; itr++)
+		{
+			LOGINFO() << *static_cast<const int*>(itr.get());
+		}
 	}
 }
 

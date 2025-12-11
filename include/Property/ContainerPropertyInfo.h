@@ -156,9 +156,12 @@ namespace Reflection
 		explicit ContainerPropertyInfo(const Initializer<Type, Property>& initializer, const std::string& propertyName)
 			: PropertyInfo(initializer, propertyName)
 		{
+			using ContainerIterator = typename Utils::IteratorTraits<Property>::Iterator;
+			using ContainerConstIterator = typename Utils::IteratorTraits<Property>::ConstIterator;
+
 			m_nextFunc = [](Iterator& iterator)
 			{
-				Property::ConstIterator* rawIterator = reinterpret_cast<Property::ConstIterator*>(&iterator.m_storage[0]);
+				ContainerConstIterator* rawIterator = reinterpret_cast<ContainerConstIterator*>(&iterator.m_storage[0]);
 				if (nullptr != rawIterator)
 				{
 					(*rawIterator)++;
@@ -167,7 +170,7 @@ namespace Reflection
 
 			m_prevFunc = [](Iterator& iterator)
 			{
-				Property::ConstIterator* rawIterator = reinterpret_cast<Property::ConstIterator*>(&iterator.m_storage[0]);
+				ContainerConstIterator* rawIterator = reinterpret_cast<ContainerConstIterator*>(&iterator.m_storage[0]);
 				if (nullptr != rawIterator)
 				{
 					(*rawIterator)--;
@@ -176,13 +179,13 @@ namespace Reflection
 
 			m_destroyFunc = [](Iterator& iterator)
 				{
-					auto* itr = reinterpret_cast<Property::ConstIterator*>(&iterator.m_storage[0]);
-					itr->Property::ConstIterator::~ConstIterator();
+					auto* itr = reinterpret_cast<ContainerConstIterator*>(&iterator.m_storage[0]);
+					itr->~ContainerConstIterator();
 				};
 
 			m_elementFunc = [](const Iterator& iterator) -> void*
 			{
-				const Property::ConstIterator* rawIterator = reinterpret_cast<const Property::ConstIterator*>(&iterator.m_storage);
+				const ContainerConstIterator* rawIterator = reinterpret_cast<const ContainerConstIterator*>(&iterator.m_storage);
 				if (nullptr != rawIterator)
 				{
 					return (void*) & (**rawIterator);
@@ -195,15 +198,15 @@ namespace Reflection
 
 			m_copyFunc = [](Iterator& lhs, const Iterator& rhs)
 				{
-					const Property::ConstIterator* itr = reinterpret_cast<const Property::ConstIterator*>(&rhs.m_storage);
+					const ContainerConstIterator* itr = reinterpret_cast<const ContainerConstIterator*>(&rhs.m_storage);
 
-					new (&lhs.m_storage) Property::ConstIterator(*itr);
+					new (&lhs.m_storage) ContainerConstIterator(*itr);
 				};
 
 			m_compareFunc = [](const Iterator& lhs, const Iterator& rhs) -> bool
 			{
-				const Property::ConstIterator* lhsIterator = reinterpret_cast<const Property::ConstIterator*>(&lhs.m_storage);
-				const Property::ConstIterator* rhsIterator = reinterpret_cast<const Property::ConstIterator*>(&rhs.m_storage);
+				const ContainerConstIterator* lhsIterator = reinterpret_cast<const ContainerConstIterator*>(&lhs.m_storage);
+				const ContainerConstIterator* rhsIterator = reinterpret_cast<const ContainerConstIterator*>(&rhs.m_storage);
 
 				return *lhsIterator == *rhsIterator;
 			};
@@ -212,16 +215,16 @@ namespace Reflection
 			{
 				const Property* property = static_cast<const Property*>(instance);
 
-				const auto itr = property->Begin();
-				new (&iterator.m_storage) Property::ConstIterator(itr);
+				const auto itr = property->begin();
+				new (&iterator.m_storage) ContainerConstIterator(itr);
 			};
 
 			m_endFunc = [](const void* instance, Iterator& iterator)
 			{
 				const Property* property = static_cast<const Property*>(instance);
 
-				const auto itr = property->End();
-				new (&iterator.m_storage) Property::ConstIterator(itr);
+				const auto itr = property->end();
+				new (&iterator.m_storage) ContainerConstIterator(itr);
 			};
 		}
 
@@ -288,28 +291,29 @@ namespace Reflection
 		template<typename Type, typename Property>
 		struct Initializer : public PropertyInfo::Initializer<Type, Property>
 		{
-			const TypeInfo* elementType;
+			using ValueType = typename Utils::ValueTraits<Property>::ValueType;
+
+			const TypeInfo* valueType;
 
 			Initializer(const size_t offset)
 				: PropertyInfo::Initializer<Type, Property>(offset)
-				, elementType(TypeInfo::Get<typename Property::ElementType>())
-			{
-			}
+				, valueType(TypeInfo::Get<ValueType>())
+			{}
 		};
 
 	public :
 		template<typename Type, typename Property>
 		explicit ArrayPropertyInfo(const Initializer<Type, Property>& initializer, const std::string& propertyName)
 			: ContainerPropertyInfo(initializer, propertyName)
-			, m_elementType(initializer.elementType)
+			, m_valueType(initializer.valueType)
 		{
 		}
 
 	public :
-		const TypeInfo* GetElementType() const { return m_elementType; }
+		const TypeInfo* GetValueType() const { return m_valueType; }
 
 	private :
-		const TypeInfo* m_elementType;
+		const TypeInfo* m_valueType;
 	};
 
 	class SetPropertyInfo : public ContainerPropertyInfo
@@ -320,13 +324,16 @@ namespace Reflection
 		template<typename Type, typename Property>
 		struct Initializer : public PropertyInfo::Initializer<Type, Property>
 		{
-			const TypeInfo* elementType;
+			using ValueType = typename Utils::ValueTraits<Property>::ValueType;
+			using KeyType = typename Utils::KeyTraits<Property>::KeyType;
+
+			const TypeInfo* valueType;
 			const TypeInfo* keyType;
 
 			Initializer(const size_t offset)
 				: PropertyInfo::Initializer<Type, Property>(offset)
-				, elementType(TypeInfo::Get<typename Property::ElementType>())
-				, keyType(TypeInfo::Get<typename Property::KeyType>())
+				, valueType(TypeInfo::Get<ValueType>())
+				, keyType(TypeInfo::Get<KeyType>())
 			{}
 		};
 
@@ -334,17 +341,17 @@ namespace Reflection
 		template<typename Type, typename Property>
 		explicit SetPropertyInfo(const Initializer<Type, Property>& initializer, const std::string& propertyName)
 			: ContainerPropertyInfo(initializer, propertyName)
-			, m_elementType(initializer.elementType)
+			, m_valueType(initializer.valueType)
 			, m_keyType(initializer.keyType)
 		{
 		}
 
 	public :
-		const TypeInfo* GetElementType() const { return m_elementType; }
+		const TypeInfo* GetValueType() const { return m_valueType; }
 		const TypeInfo* GetKeyType() const { return m_keyType; }
 
 	private :
-		const TypeInfo* m_elementType;
+		const TypeInfo* m_valueType;
 		const TypeInfo* m_keyType;
 	};
 
@@ -356,20 +363,24 @@ namespace Reflection
 		template<typename Type, typename Property>
 		struct Initializer : public PropertyInfo::Initializer<Type, Property>
 		{
-			const TypeInfo* elementType;
-			const TypeInfo* keyType;
+			using ValueType = typename Utils::ValueTraits<Property>::ValueType;
+			using KeyType = typename Utils::KeyTraits<Property>::KeyType;
+			using MappedType = typename Utils::MappedTraits<Property>::MappedType;
+
 			const TypeInfo* valueType;
+			const TypeInfo* keyType;
+			const TypeInfo* mappedType;
 
 			const size_t keyOffset;
-			const size_t valueOffset;
+			const size_t mappedOffset;
 
 			Initializer(const size_t offset)
 				: PropertyInfo::Initializer<Type, Property>(offset)
-				, elementType(TypeInfo::Get<typename Property::ElementType>())
-				, keyType(TypeInfo::Get<typename Property::KeyType>())
-				, valueType(TypeInfo::Get<typename Property::ValueType>())
-				, keyOffset(reinterpret_cast<size_t>(&(static_cast<Property::ElementType*>(nullptr)->first)))
-				, valueOffset(reinterpret_cast<size_t>(&(static_cast<Property::ElementType*>(nullptr)->second)))
+				, valueType(TypeInfo::Get<ValueType>())
+				, keyType(TypeInfo::Get<KeyType>())
+				, mappedType(TypeInfo::Get<MappedType>())
+				, keyOffset(reinterpret_cast<size_t>(&(static_cast<ValueType*>(nullptr)->first)))
+				, mappedOffset(reinterpret_cast<size_t>(&(static_cast<ValueType*>(nullptr)->second)))
 			{}
 		};
 
@@ -377,18 +388,18 @@ namespace Reflection
 		template<typename Type, typename Property>
 		explicit MapPropertyInfo(const Initializer<Type, Property>& initializer, const std::string& propertyName)
 			: ContainerPropertyInfo(initializer, propertyName)
-			, m_elementType(initializer.elementType)
-			, m_keyType(initializer.keyType)
 			, m_valueType(initializer.valueType)
+			, m_keyType(initializer.keyType)
+			, m_mappedType(initializer.mappedType)
 			, m_keyOffset(initializer.keyOffset)
-			, m_valueOffset(initializer.valueOffset)
+			, m_mappedOffset(initializer.mappedOffset)
 		{
 		}
 
 	public :
-		const TypeInfo* GetElementType() const { return m_elementType; }
-		const TypeInfo* GetKeyType() const { return m_keyType; }
 		const TypeInfo* GetValueType() const { return m_valueType; }
+		const TypeInfo* GetKeyType() const { return m_keyType; }
+		const TypeInfo* GetMappedType() const { return m_keyType; }
 
 		const void* GetRawKey(const void* rawElement) const
 		{
@@ -398,21 +409,21 @@ namespace Reflection
 			return reinterpret_cast<const void*>(address);
 		}
 
-		const void* GetRawValue(const void* rawElement) const
+		const void* GetRawMapped(const void* rawElement) const
 		{
 			const char* base = reinterpret_cast<const char*>(rawElement);
-			const char* address = base + m_valueOffset;
+			const char* address = base + m_mappedOffset;
 
 			return reinterpret_cast<const void*>(address);
 		}
 
 	private :
-		const TypeInfo* m_elementType;
-		const TypeInfo* m_keyType;
 		const TypeInfo* m_valueType;
+		const TypeInfo* m_keyType;
+		const TypeInfo* m_mappedType;
 
 		const size_t m_keyOffset;
-		const size_t m_valueOffset;
+		const size_t m_mappedOffset;
 	};
 };
 
