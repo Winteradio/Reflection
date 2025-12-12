@@ -210,29 +210,29 @@ namespace Reflection
 				return *lhsIterator == *rhsIterator;
 			};
 
-			m_beginFunc = [](const void* instance, Iterator& iterator)
+			m_beginFunc = [](const void* container, Iterator& iterator)
 			{
-				const Property* property = static_cast<const Property*>(instance);
+				const Property* property = static_cast<const Property*>(container);
 
 				const auto itr = property->begin();
 				new (&iterator.m_storage) ContainerConstIterator(itr);
 			};
 
-			m_endFunc = [](const void* instance, Iterator& iterator)
+			m_endFunc = [](const void* container, Iterator& iterator)
 			{
-				const Property* property = static_cast<const Property*>(instance);
+				const Property* property = static_cast<const Property*>(container);
 
 				const auto itr = property->end();
 				new (&iterator.m_storage) ContainerConstIterator(itr);
 			};
 		}
 
-		Iterator begin(const void* instance) const
+		Iterator begin(const void* container) const
 		{
 			if (nullptr != m_beginFunc)
 			{
 				Iterator itr;
-				m_beginFunc(GetRaw(instance), itr);
+				m_beginFunc(container, itr);
 
 				itr.m_nextFunc = m_nextFunc;
 				itr.m_prevFunc = m_prevFunc;
@@ -249,12 +249,12 @@ namespace Reflection
 			}
 		}
 
-		Iterator end(const void* instance) const
+		Iterator end(const void* container) const
 		{
 			if (nullptr != m_endFunc)
 			{
 				Iterator itr;
-				m_endFunc(GetRaw(instance), itr);
+				m_endFunc(container, itr);
 
 				itr.m_nextFunc = m_nextFunc;
 				itr.m_prevFunc = m_prevFunc;
@@ -400,17 +400,17 @@ namespace Reflection
 		const TypeInfo* GetKeyType() const { return m_keyType; }
 		const TypeInfo* GetMappedType() const { return m_keyType; }
 
-		const void* GetRawKey(const void* rawElement) const
+		const void* GetRawKey(const void* rawValue) const
 		{
-			const char* base = reinterpret_cast<const char*>(rawElement);
+			const char* base = reinterpret_cast<const char*>(rawValue);
 			const char* address = base + m_keyOffset;
 
 			return reinterpret_cast<const void*>(address);
 		}
 
-		const void* GetRawMapped(const void* rawElement) const
+		const void* GetRawMapped(const void* rawValue) const
 		{
-			const char* base = reinterpret_cast<const char*>(rawElement);
+			const char* base = reinterpret_cast<const char*>(rawValue);
 			const char* address = base + m_mappedOffset;
 
 			return reinterpret_cast<const void*>(address);
