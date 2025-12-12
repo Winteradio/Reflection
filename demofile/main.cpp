@@ -413,8 +413,8 @@ void Container()
 			return;
 		}
 
-		auto beginItr = arrayPropertyInfo->begin(&test);
-		auto endItr = arrayPropertyInfo->end(&test);
+		auto beginItr = arrayPropertyInfo->begin(&test.m_dArray);
+		auto endItr = arrayPropertyInfo->end(&test.m_dArray);
 		for (auto itr = beginItr; itr != endItr; itr++)
 		{
 			LOGINFO() << *static_cast<const int*>(itr.get());
@@ -440,8 +440,8 @@ void Container()
 			return;
 		}
 
-		auto beginItr = arrayPropertyInfo->begin(&test);
-		auto endItr = arrayPropertyInfo->end(&test);
+		auto beginItr = arrayPropertyInfo->begin(&test.m_vector);
+		auto endItr = arrayPropertyInfo->end(&test.m_vector);
 		for (auto itr = beginItr; itr != endItr; itr++)
 		{
 			LOGINFO() << *static_cast<const int*>(itr.get());
