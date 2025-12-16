@@ -420,6 +420,20 @@ namespace Reflection
 			using ClassType = Class;
 			using PropertyType = Property;
 		};
+
+		template<typename T, typename = void>
+		struct HasRuntimeType
+		{
+			static constexpr bool value = false;
+		};
+
+		template<typename T>
+		struct HasRuntimeType<T, typename Reflection::Utils::TypeWrapper<decltype(std::declval<T>().GetTypeInfo())>::Type>
+		{
+			static constexpr bool value = true;
+		};
+		
+		const std::string GetName(const std::string& rawClassName);
 	};
 };
 #endif // __REFLECTION_UTILS_H__

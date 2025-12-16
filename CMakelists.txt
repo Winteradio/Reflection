@@ -25,6 +25,7 @@ set(INCLUDE_DIR_LIST
 set(HEADER_LIST
     ${HEADER_DIR}/Reflection.h
     ${HEADER_DIR}/Utils.h
+    ${HEADER_DIR}/Macro.h
 
     ${HEADER_DIR}/Method/MethodCall.h
     ${HEADER_DIR}/Method/MethodInfo.h
@@ -42,6 +43,8 @@ set(HEADER_LIST
 )
 
 set(SOURCE_LIST
+    ${SOURCE_DIR}/Utils.cpp
+
     ${SOURCE_DIR}/Method/MethodInfo.cpp
 
     ${SOURCE_DIR}/Property/PropertyInfo.cpp

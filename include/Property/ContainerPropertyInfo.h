@@ -398,7 +398,7 @@ namespace Reflection
 	public :
 		const TypeInfo* GetValueType() const { return m_valueType; }
 		const TypeInfo* GetKeyType() const { return m_keyType; }
-		const TypeInfo* GetMappedType() const { return m_keyType; }
+		const TypeInfo* GetMappedType() const { return m_mappedType; }
 
 		const void* GetRawKey(const void* rawValue) const
 		{
