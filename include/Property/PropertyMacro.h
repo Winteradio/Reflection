@@ -1,6 +1,7 @@
 #ifndef __REFLECTION_PROPERTYMACRO_H__
 #define __REFLECTION_PROPERTYMACRO_H__
 
+#include "Macro.h"
 #include "Property/PropertyInfo.h"
 #include "Property/PropertyCreator.h"
 
@@ -28,6 +29,6 @@
 			}; \
 		}; \
 		\
-		static inline const RegisterProperty##Property s_registerProperty##Property; \
+		static inline const RegisterProperty##Property s_registerProperty##Property __STATIC_USED__; \
 
 #endif // __REFLECTION_PROPERTYMACRO_H__

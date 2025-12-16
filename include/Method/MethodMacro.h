@@ -1,6 +1,7 @@
 #ifndef __REFLECTION_METHODMACRO_H__
 #define __REFLECTION_METHODMACRO_H__
 
+#include "Macro.h"
 #include "Method/MethodInfo.h"
 
 /**
@@ -26,6 +27,6 @@
 			}; \
 		}; \
 		\
-		static inline const RegisterMethod##Method s_registerMethod##Method; \
+		static inline const RegisterMethod##Method s_registerMethod##Method __STATIC_USED__; \
 
 #endif // __REFLECTION_METHODMACRO_H__

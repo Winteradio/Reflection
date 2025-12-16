@@ -1,6 +1,7 @@
 #ifndef __REFLECTION_TYPEMACRO_H__
 #define __REFLECTION_TYPEMACRO_H__
 
+#include "Macro.h"
 #include "Type/TypeInfo.h"
 
 /**
@@ -36,6 +37,6 @@
 		} \
 \
 	private : \
-		static inline const Reflection::TypeInfo* s_typeInfo = GetStaticTypeInfo(); \
+		static inline const Reflection::TypeInfo* s_typeInfo __STATIC_USED__ = GetStaticTypeInfo();\
 
 #endif // __REFLECTIONTYPE_MACRO_H__

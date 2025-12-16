@@ -48,7 +48,7 @@ namespace Reflection
 				: m_ownerType(initializer.ownerType)
 				, m_methodType(initializer.methodType)
 				, m_methodBase(initializer.methodBase)
-				, m_methodName(methodName)
+				, m_methodName(initializer.ownerType != nullptr ? initializer.ownerType->GetTypeName() + "::" + methodName : methodName)
 			{
 				TypeInfo* ownerType = const_cast<TypeInfo*>(m_ownerType);
 				if (nullptr != ownerType)

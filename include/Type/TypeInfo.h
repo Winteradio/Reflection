@@ -4,8 +4,10 @@
 #include <typeinfo>
 #include <unordered_map>
 #include <string>
+#include <iostream>
 
 #include "Utils.h"
+#include "Macro.h"
 
 namespace Reflection
 {
@@ -52,10 +54,10 @@ namespace Reflection
 				const size_t typeHash;
 				const std::string typeName;
 
-				Initializer()
+				Initializer(const std::string& name)
 					: superType(nullptr)
 					, typeHash(typeid(T).hash_code())
-					, typeName(typeid(T).name())
+					, typeName(name)
 				{}
 			};
 
@@ -70,10 +72,10 @@ namespace Reflection
 				const size_t typeHash;
 				const std::string typeName;
 
-				Initializer()
+				Initializer(const std::string& name)
 					: superType(T::SuperType::GetStaticTypeInfo())
 					, typeHash(typeid(T).hash_code())
-					, typeName(typeid(T).name())
+					, typeName(name)
 				{}
 			};
 
@@ -92,7 +94,8 @@ namespace Reflection
 			template<typename T>
 			static const TypeInfo* Get()
 			{
-				static TypeInfo::Initializer<T> initializer;
+				static std::string className = Utils::GetName(__CLASSNAME__);
+				static TypeInfo::Initializer<T> initializer(className);
 				static TypeInfo typeInfo(initializer);
 
 				return &typeInfo;
@@ -116,6 +119,19 @@ namespace Reflection
 				if constexpr (Utils::IsPointer<T>::value || Utils::IsReference<T>::value || Utils::IsConst<T>::value)
 				{
 					m_pureType = TypeInfo::Get<Utils::PureType_t<T>>();
+				}
+
+				if (nullptr != m_superType)
+				{
+					for (const auto& [name, propertyInfo] : m_superType->GetProperties())
+					{
+						AddProperty(propertyInfo);
+					}
+
+					for (const auto& [name, methodInfo] : m_superType->GetMethods())
+					{
+						AddMethod(methodInfo);
+					}
 				}
 
 				Regist();

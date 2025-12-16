@@ -64,7 +64,7 @@ namespace Reflection
 			 */
 			template<typename Type, typename Property>
 			explicit PropertyInfo(const Initializer<Type, Property>& initializer, const std::string& propertyName)
-				: m_propertyName(propertyName)
+				: m_propertyName(initializer.ownerType != nullptr ? initializer.ownerType->GetTypeName() + "::" + propertyName : propertyName)
 				, m_propertyOffset(initializer.propertyOffset)
 				, m_propertyType(initializer.propertyType)
 				, m_ownerType(initializer.ownerType)
