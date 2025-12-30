@@ -54,6 +54,9 @@ set(SOURCE_LIST
     ${SOURCE_DIR}/Type/TypeManager.cpp
 )
 
+source_group(TREE "${HEADER_DIR}" PREFIX "include" FILES ${HEADER_LIST})
+source_group(TREE "${SOURCE_DIR}" PREFIX "src" FILES ${SOURCE_LIST})
+
 create_library(
     LIBRARY_TYPE ${LIBRARY_TYPE}
     TARGET_NAME ${PROJECT_NAME}
