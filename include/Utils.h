@@ -230,7 +230,7 @@ namespace Reflection
 		 * @tparam	T The type to process.
 		 */
 		template<typename T>
-		using PureType_t = RemovePointer_t<RemoveReference_t<RemoveConst_t<T>>>;
+		using PureType_t = RemoveConst_t<RemoveReference_t<RemovePointer_t<T>>>;
 
 		/**
 		 * @brief	Compile-time check to determine if a type is a pointer.

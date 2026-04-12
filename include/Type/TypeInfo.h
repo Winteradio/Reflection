@@ -51,12 +51,10 @@ namespace Reflection
 			struct Initializer
 			{
 				const TypeInfo* superType;
-				const size_t typeHash;
 				const std::string typeName;
 
 				Initializer(const std::string& name)
 					: superType(nullptr)
-					, typeHash(typeid(T).hash_code())
 					, typeName(name)
 				{}
 			};
@@ -69,12 +67,10 @@ namespace Reflection
 			struct Initializer<T, ValidSuper<T>>
 			{
 				const TypeInfo* superType;
-				const size_t typeHash;
 				const std::string typeName;
 
 				Initializer(const std::string& name)
 					: superType(T::SuperType::GetStaticTypeInfo())
-					, typeHash(typeid(T).hash_code())
 					, typeName(name)
 				{}
 			};
@@ -111,8 +107,8 @@ namespace Reflection
 			explicit TypeInfo(const Initializer<T>& initializer)
 				: m_properties()
 				, m_methods()
+				, m_typeHash(reinterpret_cast<size_t>(this))
 				, m_typeName(initializer.typeName)
-				, m_typeHash(initializer.typeHash)
 				, m_superType(initializer.superType)
 				, m_pureType(this)
 			{

@@ -22,6 +22,7 @@
  */
 #define GENERATE( Class ) \
 	public : \
+		friend class Reflection::Utils::TypeDetector<Class>; \
 		using SuperType = typename Reflection::Utils::TypeDetector<Class>::Type; \
 		using ThisType = Class; \
 \
@@ -38,5 +39,6 @@
 \
 	private : \
 		static inline const Reflection::TypeInfo* s_typeInfo __STATIC_USED__ = GetStaticTypeInfo();\
+\
 
 #endif // __REFLECTIONTYPE_MACRO_H__

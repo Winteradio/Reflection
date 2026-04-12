@@ -28,10 +28,10 @@ namespace Reflection
 	 * @brief	Checks if the TypeInfo of the two template types T and U are identical.
 	 * @tparam	T The first type to compare.
 	 * @tparam	U The second type to compare.
-	 * @return	bool True if the TypeInfos of the two types are identical.
+	 * @return	constexpr bool True if the TypeInfos of the two types are identical.
 	 */
 	template<typename T, typename U>
-	bool IsSame()
+	constexpr bool IsSame()
 	{
 		return Utils::IsSame<T, U>::value;
 	}
@@ -43,7 +43,7 @@ namespace Reflection
 	 * @return	bool True if T is the superior type of U.
 	 */
 	template<typename T, typename U>
-	bool IsChild()
+	constexpr bool IsChild()
 	{
 		return Utils::IsBase<T, U>::value;
 	}
@@ -58,8 +58,8 @@ namespace Reflection
 	 * @return	T Returns a pointer of the target type T if the cast is valid, and nullptr if it fails.
 	 */
 	template<typename T, typename U, 
-		typename TType = Utils::RemovePointer_t<T>, 
-		typename UType = Utils::RemovePointer_t<U>>
+		typename TType = Utils::RemovePointer_t<T>, typename TPure = Utils::PureType_t<T>, 
+		typename UType = Utils::RemovePointer_t<U>, typename UPure = Utils::PureType_t<U>>
 	T Cast(U pointer)
 	{
 		static_assert(!Utils::IsConst<UType>::value || Utils::IsConst<TType>::value,
@@ -77,7 +77,7 @@ namespace Reflection
 
 		// [Stage 1: Compile-time / Static Casting Check]
 	    // Check if the Pure Types are identical or if the cast is a safe compile-time upcast (UType -> TType).
-		if (IsSame<TType, UType>() || IsChild<TType, UType>())
+		if constexpr (IsSame<TType, UType>() || IsChild<TType, UType>())
 		{
 			return static_cast<T>(pointer);
 		}
@@ -86,7 +86,7 @@ namespace Reflection
     	// The static check failed, now perform a dynamic check against the actual runtime object type.
 
 		// Get TypeInfo for the target type (T)
-		const TypeInfo* outputType = TypeInfo::Get<TType>();
+		const TypeInfo* outputType = TypeInfo::Get<TPure>();
 		
 		// Get the TypeInfo of the actual instance that the pointer is pointing to.
 		const TypeInfo* inputType = pointer->GetTypeInfo();
