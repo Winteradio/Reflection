@@ -72,26 +72,41 @@ namespace Reflection
 			template<typename Return, typename Class, typename... Args>
 			Return Invoke(Class& instance, Args... args) const
 			{
-				void* pointer = reinterpret_cast<void*>(&instance);
-
-				const MethodCall<Return, Args...>* methodCall = Cast<const MethodCall<Return, Args...>*>(m_methodBase);
+				const TypeInfo* instanceType = instance.GetTypeInfo();
+				const bool isCallable = IsSame(m_ownerType, instanceType) || IsChild(m_ownerType, instanceType);
 
 				if constexpr (Utils::IsSame<Return, void>::value)
 				{
+					if (!isCallable)
+					{
+						return;
+					}
+
+					void* pointer = reinterpret_cast<void*>(&instance);
+
+					const MethodCall<Return, Args...>* methodCall = Cast<const MethodCall<Return, Args...>*>(m_methodBase);
 					if (nullptr != methodCall)
 					{
-						methodCall->Invoke(pointer, std::forward<Args>(args)...);						
+						methodCall->Invoke(pointer, std::forward<Args>(args)...);
 					}
 				}
 				else
 				{
+					static Return null;
+					if (!isCallable)
+					{
+						return null;
+					}
+
+					void* pointer = reinterpret_cast<void*>(&instance);
+
+					const MethodCall<Return, Args...>* methodCall = Cast<const MethodCall<Return, Args...>*>(m_methodBase);
 					if (nullptr != methodCall)
 					{
-						return methodCall->Invoke(pointer, std::forward<Args>(args)...);						
+						return methodCall->Invoke(pointer, std::forward<Args>(args)...);
 					}
 					else
 					{
-						static Return null;
 						return null;
 					}
 				}

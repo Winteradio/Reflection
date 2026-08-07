@@ -62,9 +62,6 @@ namespace Reflection
 		typename UType = Utils::RemovePointer_t<U>, typename UPure = Utils::PureType_t<U>>
 	T Cast(U pointer)
 	{
-		static_assert(!Utils::IsConst<UType>::value || Utils::IsConst<TType>::value,
-					"Reflection::Cast<T, U> : If the U is the const qualifier, the T must be the const qualifier.");
-
 		// [Compile-time check] The output type T and input type U must both be pointer types.
 		static_assert(Utils::IsPointer<T>::value && Utils::IsPointer<U>::value,
 					"Reflection::Cast<T, U> : The T and U must be pointer type.");
@@ -95,7 +92,14 @@ namespace Reflection
     	// OR if the actual instance type is a child of the target type (safe downcasting).
 		if (IsSame(outputType, inputType) || IsChild(outputType, inputType))
 		{
-			return static_cast<T>(pointer);
+			if constexpr (!Utils::IsConst<UType>::value && Utils::IsConst<TType>::value)
+			{
+				return static_cast<T>(pointer);
+			}
+			else
+			{
+				return static_cast<T>(const_cast<Utils::RemoveConst_t<U>>(pointer));
+			}
 		}
 
 		// All validation failed, return nullptr.		

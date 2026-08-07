@@ -161,7 +161,7 @@ namespace Reflection
 		template<typename T>
 		struct RemoveReference<const T&>
 		{
-			using Type = T;
+			using Type = const T;
 		};
 
 		/**
@@ -171,7 +171,7 @@ namespace Reflection
 		template<typename T>
 		struct RemoveReference<volatile T&>
 		{
-			using Type = T;
+			using Type = volatile T;
 		};
 
 		/**
@@ -181,7 +181,7 @@ namespace Reflection
 		template<typename T>
 		struct RemoveReference<const volatile T&>
 		{
-			using Type = T;
+			using Type = const volatile T;
 		};
 
 		/**
@@ -202,6 +202,36 @@ namespace Reflection
 		struct RemoveConst<const T>
 		{
 			using Type = T;
+		};
+
+		template<typename T>
+		struct RemoveConst<const T&>
+		{
+			using Type = T&;
+		};
+
+		template<typename T>
+		struct RemoveConst<const T*>
+		{
+			using Type = T*;
+		};
+
+		template<typename T>
+		struct RemoveConst<const T* const>
+		{
+			using Type = T*;
+		};
+
+		template<typename T>
+		struct RemoveConst<const T* volatile>
+		{
+			using Type = T volatile;
+		};
+
+		template<typename T>
+		struct RemoveConst<const T* const volatile>
+		{
+			using Type = T volatile*;
 		};
 
 		/**
