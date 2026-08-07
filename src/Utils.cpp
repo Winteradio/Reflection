@@ -50,7 +50,7 @@ namespace Reflection
 			return className;
 		}
 #else
-		const std::string GetClassName(const std::string& rawClassName)
+		const std::string GetName(const std::string& rawClassName)
 		{
 			std::string className;
 			
